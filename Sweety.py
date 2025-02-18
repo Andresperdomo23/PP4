@@ -1,4 +1,5 @@
 import streamlit as st
+import pandas as pd
 
 def generar_mermelada(respuestas):
     """
@@ -40,6 +41,13 @@ def generar_mermelada(respuestas):
     fruta_extra = frutas.get(respuestas["imagen_recuerdo"], ("Piña", "Mango"))
     topping_seleccionado = toppings.get(respuestas["impacto_cancion"], "Coco rallado")
     descripcion_sabor = descripciones.get(respuestas["sensación_melodía"], "Una experiencia sensorial única que combina lo mejor de cada emoción musical.")
+    
+    # Guardar en un archivo CSV
+    df = pd.DataFrame([{
+        "Frutas": f"{fruta_seleccionada[0]} y {fruta_extra[1]}",
+        "Topping": topping_seleccionado
+    }])
+    df.to_csv("combinaciones_generadas.csv", mode="a", index=False, header=False)
     
     return {
         "Descripción Sensorial": descripcion_sabor,
