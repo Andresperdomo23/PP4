@@ -2,7 +2,7 @@ import streamlit as st
 
 def generar_mermelada(respuestas):
     """
-    Genera una combinación de frutas y toppings según las respuestas de la encuesta.
+    Genera una experiencia sensorial basada en las respuestas de la encuesta.
     """
     # Mapeo de respuestas a combinaciones de frutas
     frutas = {
@@ -28,17 +28,27 @@ def generar_mermelada(respuestas):
         "Como una explosión breve pero intensa": "Maracuyá y chocolate oscuro"
     }
     
+    # Mapeo de respuestas a descripciones sensoriales
+    descripciones = {
+        "Algo envolvente y armonioso": "Una combinación que te abraza con cada bocado, con un equilibrio perfecto entre dulzura y frescura.",
+        "Un contraste fuerte y marcado": "Una explosión de sabores intensos que despiertan todos tus sentidos.",
+        "Una mezcla de matices inesperados": "Un perfil de sabor que cambia con cada mordida, dejándote descubrir nuevas notas con cada degustación.",
+        "Un equilibrio entre lo clásico y lo innovador": "Un viaje entre lo familiar y lo sorpresivo, combinando tradición con un giro inesperado."
+    }
+    
     fruta_seleccionada = frutas.get(respuestas["sensación_cuerpo"], ("Fresa", "Limón"))
     fruta_extra = frutas.get(respuestas["imagen_recuerdo"], ("Piña", "Mango"))
     topping_seleccionado = toppings.get(respuestas["impacto_cancion"], "Coco rallado")
+    descripcion_sabor = descripciones.get(respuestas["sensación_melodía"], "Una experiencia sensorial única que combina lo mejor de cada emoción musical.")
     
     return {
-        "Frutas para la mermelada": (fruta_seleccionada[0], fruta_extra[1]),
-        "Topping recomendado": topping_seleccionado
+        "Descripción Sensorial": descripcion_sabor,
+        "Pista de sabor": f"Podrás encontrar notas {fruta_seleccionada[0].lower()} con un toque vibrante de {fruta_extra[1].lower()}.",
+        "Experiencia complementaria": f"Ideal para acompañar con {topping_seleccionado.lower()} y disfrutar con la música adecuada." 
     }
 
 # Interfaz con Streamlit
-st.title("🎶 Generador de Mermelada Musical 🍓")
+st.title("🎶 Generador de Experiencia Sensorial Musical 🍓")
 
 sensacion_cuerpo = st.selectbox("Si una canción pudiera sentirse físicamente, ¿cómo crees que sería la sensación en tu cuerpo?", 
     ["Algo ligero que fluye suavemente", "Un golpe de energía que despierta", "Una vibración profunda que te envuelve", "Una sensación cambiante e impredecible"])
@@ -49,13 +59,18 @@ imagen_recuerdo = st.selectbox("Cuando escuchas tu música favorita, ¿qué tipo
 impacto_cancion = st.selectbox("¿Cómo describirías el impacto de una canción que realmente te emociona?", 
     ["Directo y explosivo", "Progresivo, algo que va creciendo lentamente", "Sutil pero con una intensidad que se queda contigo", "Impredecible, con giros inesperados"])
 
-if st.button("Generar Mermelada"): 
+sensacion_melodía = st.selectbox("Si pudieras transformar una melodía en una sensación tangible, ¿cómo la describirías?", 
+    ["Algo envolvente y armonioso", "Un contraste fuerte y marcado", "Una mezcla de matices inesperados", "Un equilibrio entre lo clásico y lo innovador"])
+
+if st.button("Generar Experiencia Sensorial"):
     respuestas_usuario = {
         "sensación_cuerpo": sensacion_cuerpo,
         "imagen_recuerdo": imagen_recuerdo,
-        "impacto_cancion": impacto_cancion
+        "impacto_cancion": impacto_cancion,
+        "sensación_melodía": sensacion_melodía
     }
     resultado = generar_mermelada(respuestas_usuario)
-    st.subheader("🍓 Tu mermelada personalizada:")
-    st.write(f"**Frutas:** {resultado['Frutas para la mermelada'][0]} y {resultado['Frutas para la mermelada'][1]}")
-    st.write(f"**Topping recomendado:** {resultado['Topping recomendado']}")
+    st.subheader("🎶 Tu experiencia sensorial:")
+    st.write(f"**Descripción:** {resultado['Descripción Sensorial']}")
+    st.write(f"**Pista de sabor:** {resultado['Pista de sabor']}")
+    st.write(f"**Experiencia complementaria:** {resultado['Experiencia complementaria']}")
