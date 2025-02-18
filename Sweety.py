@@ -1,5 +1,6 @@
 import streamlit as st
 import pandas as pd
+import os
 
 def generar_mermelada(respuestas):
     """
@@ -42,6 +43,12 @@ def generar_mermelada(respuestas):
     topping_seleccionado = toppings.get(respuestas["impacto_cancion"], "Coco rallado")
     descripcion_sabor = descripciones.get(respuestas["sensación_melodía"], "Una experiencia sensorial única que combina lo mejor de cada emoción musical.")
     
+    # Generar pista de sabor sin mencionar las frutas directamente
+    pista_sabor = f"Podrás encontrar un toque de lo que madura bajo el sol con una chispa de lo exótico y vibrante." if "Maracuyá" in fruta_extra or "Piña" in fruta_extra else \
+                   f"Un balance entre lo suave y aterciopelado con un trasfondo dulce y envolvente." if "Pera" in fruta_extra or "Mango" in fruta_extra else \
+                   f"Un perfil de sabor audaz con un toque vibrante que despierta los sentidos." if "Frutos rojos" in fruta_extra or "Frambuesa" in fruta_extra else \
+                   f"Una mezcla intrigante de dulzura natural con notas profundas y complejas."
+    
     # Guardar en un archivo CSV
     df = pd.DataFrame([{
         "Frutas": f"{fruta_seleccionada[0]} y {fruta_extra[1]}",
@@ -51,7 +58,7 @@ def generar_mermelada(respuestas):
     
     return {
         "Descripción Sensorial": descripcion_sabor,
-        "Pista de sabor": f"Podrás encontrar notas {fruta_seleccionada[0].lower()} con un toque vibrante de {fruta_extra[1].lower()}.",
+        "Pista de sabor": pista_sabor,
         "Experiencia complementaria": f"Ideal para acompañar con {topping_seleccionado.lower()} y disfrutar con la música adecuada." 
     }
 
@@ -82,3 +89,13 @@ if st.button("Generar Experiencia Sensorial"):
     st.write(f"**Descripción:** {resultado['Descripción Sensorial']}")
     st.write(f"**Pista de sabor:** {resultado['Pista de sabor']}")
     st.write(f"**Experiencia complementaria:** {resultado['Experiencia complementaria']}")
+
+    # Botón para descargar combinaciones generadas
+    if os.path.exists("combinaciones_generadas.csv"):
+        with open("combinaciones_generadas.csv", "rb") as file:
+            st.download_button(
+                label="📥 Descargar combinaciones generadas",
+                data=file,
+                file_name="combinaciones_generadas.csv",
+                mime="text/csv"
+            )
