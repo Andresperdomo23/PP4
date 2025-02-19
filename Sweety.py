@@ -61,7 +61,7 @@ def generar_mermelada(respuestas):
         "Frutas": f"{fruta_seleccionada[0]} y {fruta_extra[1]}",
         "Topping": topping_seleccionado
     }])
-    df.to_csv("combinaciones_generadas.csv", mode="a", index=False, header=False)
+    df.to_csv("combinaciones_generadas.csv", mode="a", index=False, header=not os.path.exists("combinaciones_generadas.csv"))
     
     return {
         "Descripción Sensorial": descripcion_sabor,
@@ -110,7 +110,7 @@ if st.button("Generar Experiencia Sensorial"):
         if os.path.exists("combinaciones_generadas.csv"):
             with open("combinaciones_generadas.csv", "rb") as file:
                 st.download_button(
-                    label="Descargar combinaciones generadas",
+                    label="📥 Descargar combinaciones generadas",
                     data=file,
                     file_name="combinaciones_generadas.csv",
                     mime="text/csv"
