@@ -1,6 +1,7 @@
 import streamlit as st
 import pandas as pd
 import os
+from datetime import datetime
 
 def generar_mermelada(respuestas):
     """
@@ -43,6 +44,9 @@ def generar_mermelada(respuestas):
     topping_seleccionado = toppings.get(respuestas["impacto_cancion"], "Coco rallado")
     descripcion_sabor = descripciones.get(respuestas["sensación_melodía"], "Una experiencia sensorial única que combina lo mejor de cada emoción musical.")
     
+    # Obtener la fecha y hora actual
+    fecha_hora_actual = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    
     # Generar pista de sabor sin mencionar las frutas directamente
     pista_sabor = f"Podrás encontrar un toque de lo que madura bajo el sol con una chispa de lo exótico y vibrante." if "Maracuyá" in fruta_extra or "Piña" in fruta_extra else \
                    f"Un balance entre lo suave y aterciopelado con un trasfondo dulce y envolvente." if "Pera" in fruta_extra or "Mango" in fruta_extra else \
@@ -51,6 +55,9 @@ def generar_mermelada(respuestas):
     
     # Guardar en un archivo CSV
     df = pd.DataFrame([{
+        "Fecha y Hora": fecha_hora_actual,
+        "Nombre": respuestas["nombre"],
+        "Canción": respuestas["cancion"],
         "Frutas": f"{fruta_seleccionada[0]} y {fruta_extra[1]}",
         "Topping": topping_seleccionado
     }])
@@ -64,6 +71,10 @@ def generar_mermelada(respuestas):
 
 # Interfaz con Streamlit
 st.title("🎶 Generador de Experiencia Sensorial Musical 🍓")
+
+# Campos de entrada para el usuario
+nombre = st.text_input("📝 Ingresa tu nombre")
+cancion = st.text_input("🎵 Pega el link de tu canción en Spotify")
 
 sensacion_cuerpo = st.selectbox("Si una canción pudiera sentirse físicamente, ¿cómo crees que sería la sensación en tu cuerpo?", 
     ["Algo ligero que fluye suavemente", "Un golpe de energía que despierta", "Una vibración profunda que te envuelve", "Una sensación cambiante e impredecible"])
@@ -79,6 +90,8 @@ sensacion_melodía = st.selectbox("Si pudieras transformar una melodía en una s
 
 if st.button("Generar Experiencia Sensorial"):
     respuestas_usuario = {
+        "nombre": nombre,
+        "cancion": cancion,
         "sensación_cuerpo": sensacion_cuerpo,
         "imagen_recuerdo": imagen_recuerdo,
         "impacto_cancion": impacto_cancion,
@@ -90,16 +103,3 @@ if st.button("Generar Experiencia Sensorial"):
     st.write(f"**Pista de sabor:** {resultado['Pista de sabor']}")
     st.write(f"**Experiencia complementaria:** {resultado['Experiencia complementaria']}")
 
-# Campo de autenticación para el administrador con descarga automática
-codigo_secreto = st.text_input("🔑 Ingresa el código de administrador", type="password")
-if codigo_secreto == "mermelada123":
-    st.success("✅ Acceso concedido. Descargando archivo...")
-    if os.path.exists("combinaciones_generadas.csv"):
-        with open("combinaciones_generadas.csv", "rb") as file:
-            st.download_button(
-                label="Descarga en progreso...",
-                data=file,
-                file_name="combinaciones_generadas.csv",
-                mime="text/csv",
-                key="download_button"
-            )
