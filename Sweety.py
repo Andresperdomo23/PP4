@@ -90,12 +90,17 @@ if st.button("Generar Experiencia Sensorial"):
     st.write(f"**Pista de sabor:** {resultado['Pista de sabor']}")
     st.write(f"**Experiencia complementaria:** {resultado['Experiencia complementaria']}")
 
-    # Botón para descargar combinaciones generadas
-    if os.path.exists("combinaciones_generadas.csv"):
-        with open("combinaciones_generadas.csv", "rb") as file:
-            st.download_button(
-                label="📥 Descargar combinaciones generadas",
-                data=file,
-                file_name="combinaciones_generadas.csv",
-                mime="text/csv"
-            )
+    # Campo de autenticación para el administrador
+    codigo_secreto = st.text_input("🔑 Ingresa el código de administrador", type="password")
+    if codigo_secreto == "tu_codigo_secreto":
+        st.success("✅ Acceso concedido")
+        if os.path.exists("combinaciones_generadas.csv"):
+            with open("combinaciones_generadas.csv", "rb") as file:
+                st.download_button(
+                    label="📥 Descargar combinaciones generadas",
+                    data=file,
+                    file_name="combinaciones_generadas.csv",
+                    mime="text/csv"
+                )
+    else:
+        st.warning("⚠️ Solo el administrador puede descargar el archivo.")
