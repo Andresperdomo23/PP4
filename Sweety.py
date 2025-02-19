@@ -31,19 +31,6 @@ def generar_mermelada(respuestas):
         "Como una explosión breve pero intensa": "Maracuyá y chocolate oscuro"
     }
     
-    # Mapeo de respuestas a descripciones sensoriales
-    descripciones = {
-        "Algo envolvente y armonioso": "Una combinación que te abraza con cada bocado, con un equilibrio perfecto entre dulzura y frescura.",
-        "Un contraste fuerte y marcado": "Una explosión de sabores intensos que despiertan todos tus sentidos.",
-        "Una mezcla de matices inesperados": "Un perfil de sabor que cambia con cada mordida, dejándote descubrir nuevas notas con cada degustación.",
-        "Un equilibrio entre lo clásico y lo innovador": "Un viaje entre lo familiar y lo sorpresivo, combinando tradición con un giro inesperado."
-    }
-    
-    fruta_seleccionada = frutas.get(respuestas["sensación_cuerpo"], ("Fresa", "Limón"))
-    fruta_extra = frutas.get(respuestas["imagen_recuerdo"], ("Piña", "Mango"))
-    topping_seleccionado = toppings.get(respuestas["impacto_cancion"], "Coco rallado")
-    descripcion_sabor = descripciones.get(respuestas["sensación_melodía"], "Una experiencia sensorial única que combina lo mejor de cada emoción musical.")
-    
     # Obtener la fecha y hora actual
     fecha_hora_actual = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     
@@ -53,8 +40,8 @@ def generar_mermelada(respuestas):
         "Fecha y Hora": fecha_hora_actual,
         "Nombre": respuestas["nombre"],
         "Canción": respuestas["cancion"],
-        "Frutas": f"{fruta_seleccionada[0]} y {fruta_extra[1]}",
-        "Topping": topping_seleccionado
+        "Frutas": f"{frutas[respuestas['sensación_cuerpo']][0]} y {frutas[respuestas['imagen_recuerdo']][1]}",
+        "Topping": toppings.get(respuestas["impacto_cancion"], "Coco rallado")
     }])
     
     if not os.path.exists(archivo_csv):
@@ -62,11 +49,7 @@ def generar_mermelada(respuestas):
     else:
         nuevo_registro.to_csv(archivo_csv, mode="a", index=False, header=False)
     
-    return archivo_csv, {
-        "Descripción Sensorial": descripcion_sabor,
-        "Pista de sabor": f"Un perfil de sabor con matices {fruta_seleccionada[0].lower()} y un toque {fruta_extra[1].lower()}.",
-        "Experiencia complementaria": f"Ideal para acompañar con {topping_seleccionado.lower()} y disfrutar con la música adecuada." 
-    }
+    return archivo_csv
 
 # Interfaz con Streamlit
 st.title("🎶 Generador de Experiencia Sensorial Musical 🍓")
@@ -84,36 +67,26 @@ imagen_recuerdo = st.selectbox("Cuando escuchas tu música favorita, ¿qué tipo
 impacto_cancion = st.selectbox("¿Cómo describirías el impacto de una canción que realmente te emociona?", 
     ["Directo y explosivo", "Progresivo, algo que va creciendo lentamente", "Sutil pero con una intensidad que se queda contigo", "Impredecible, con giros inesperados"])
 
-sensacion_melodía = st.selectbox("Si pudieras transformar una melodía en una sensación tangible, ¿cómo la describirías?", 
-    ["Algo envolvente y armonioso", "Un contraste fuerte y marcado", "Una mezcla de matices inesperados", "Un equilibrio entre lo clásico y lo innovador"])
-
 if st.button("Generar Experiencia Sensorial"):
-    archivo_csv, resultado = generar_mermelada({
+    archivo_csv = generar_mermelada({
         "nombre": nombre,
         "cancion": cancion,
         "sensación_cuerpo": sensacion_cuerpo,
         "imagen_recuerdo": imagen_recuerdo,
-        "impacto_cancion": impacto_cancion,
-        "sensación_melodía": sensacion_melodía
+        "impacto_cancion": impacto_cancion
     })
-    
-    st.subheader("🎶 Tu experiencia sensorial:")
-    st.write(f"**Descripción:** {resultado['Descripción Sensorial']}")
-    st.write(f"**Pista de sabor:** {resultado['Pista de sabor']}")
-    st.write(f"**Experiencia complementaria:** {resultado['Experiencia complementaria']}")
+    st.success("✅ Tu experiencia ha sido registrada con éxito.")
 
-    # Autenticación y descarga del archivo
-    codigo_secreto = st.text_input("🔑 Ingresa el código de administrador", type="password")
-    if codigo_secreto == "mermelada123":
-        if os.path.exists(archivo_csv):
-            with open(archivo_csv, "rb") as file:
-                st.download_button(
-                    label="📥 Descargar combinaciones generadas",
-                    data=file,
-                    file_name=archivo_csv,
-                    mime="text/csv"
-                )
-        else:
-            st.error("⚠️ No hay combinaciones generadas aún.")
-
-
+# Autenticación y botón de descarga
+codigo_secreto = st.text_input("🔑 Ingresa el código de administrador", type="password")
+if codigo_secreto == "mermelada123":
+    if os.path.exists("combinaciones_generadas.csv"):
+        with open("combinaciones_generadas.csv", "rb") as file:
+            st.download_button(
+                label="📥 Descargar combinaciones generadas",
+                data=file,
+                file_name="combinaciones_generadas.csv",
+                mime="text/csv"
+            )
+    else:
+        st.error("⚠️ No hay combinaciones generadas aún.")
