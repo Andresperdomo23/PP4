@@ -54,14 +54,19 @@ def generar_mermelada(respuestas):
                    f"Una mezcla intrigante de dulzura natural con notas profundas y complejas."
     
     # Guardar en un archivo CSV
-    df = pd.DataFrame([{
+    archivo_csv = "combinaciones_generadas.csv"
+    nuevo_registro = pd.DataFrame([{
         "Fecha y Hora": fecha_hora_actual,
         "Nombre": respuestas["nombre"],
         "Canción": respuestas["cancion"],
         "Frutas": f"{fruta_seleccionada[0]} y {fruta_extra[1]}",
         "Topping": topping_seleccionado
     }])
-    df.to_csv("combinaciones_generadas.csv", mode="a", index=False, header=not os.path.exists("combinaciones_generadas.csv"))
+    
+    if not os.path.exists(archivo_csv):
+        nuevo_registro.to_csv(archivo_csv, index=False)
+    else:
+        nuevo_registro.to_csv(archivo_csv, mode="a", index=False, header=False)
     
     return {
         "Descripción Sensorial": descripcion_sabor,
@@ -103,15 +108,14 @@ if st.button("Generar Experiencia Sensorial"):
     st.write(f"**Pista de sabor:** {resultado['Pista de sabor']}")
     st.write(f"**Experiencia complementaria:** {resultado['Experiencia complementaria']}")
 
-    # Campo de autenticación para el administrador con descarga automática
+    # Autenticación y descarga del archivo
     codigo_secreto = st.text_input("🔑 Ingresa el código de administrador", type="password")
-    if codigo_secreto == "mermelada123":
-        st.success("✅ Acceso concedido. Descargando archivo...")
-        if os.path.exists("combinaciones_generadas.csv"):
-            with open("combinaciones_generadas.csv", "rb") as file:
-                st.download_button(
-                    label="📥 Descargar combinaciones generadas",
-                    data=file,
-                    file_name="combinaciones_generadas.csv",
-                    mime="text/csv"
-                )
+    if codigo_secreto == "mermelada123" and os.path.exists("combinaciones_generadas.csv"):
+        with open("combinaciones_generadas.csv", "rb") as file:
+            st.download_button(
+                label="📥 Descargar combinaciones generadas",
+                data=file,
+                file_name="combinaciones_generadas.csv",
+                mime="text/csv"
+            )
+
