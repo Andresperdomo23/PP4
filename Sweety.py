@@ -92,7 +92,7 @@ if st.button("Generar Experiencia Sensorial"):
 
     # Campo de autenticación para el administrador
     codigo_secreto = st.text_input("🔑 Ingresa el código de administrador", type="password")
-    if codigo_secreto == "tu_codigo_secreto":
+    if codigo_secreto == "mermelada123":
         st.success("✅ Acceso concedido")
         if os.path.exists("combinaciones_generadas.csv"):
             with open("combinaciones_generadas.csv", "rb") as file:
@@ -104,3 +104,4 @@ if st.button("Generar Experiencia Sensorial"):
                 )
     else:
         st.warning("⚠️ Solo el administrador puede descargar el archivo.")
+
