@@ -1,68 +1,80 @@
 import streamlit as st
-import gspread
-from oauth2client.service_account import ServiceAccountCredentials
-import pandas as pd
-import datetime
+import random
+from streamlit_dnd import dnd_container, dnd_item
 
-# CONFIGURAR GOOGLE SHEETS
-scope = ["https://spreadsheets.google.com/feeds", "https://www.googleapis.com/auth/drive"]
-creds = ServiceAccountCredentials.from_json_keyfile_name("tu_archivo_credenciales.json", scope)
-client = gspread.authorize(creds)
-spreadsheet = client.open("Encuesta_Mermelada")  # Nombre del Google Sheets
-worksheet = spreadsheet.sheet1  # Primera hoja del documento
+# Diccionario de palabras clave y sabores
+sabores = {
+    "Melódica": "Frutos rojos con un toque de vainilla",
+    "Rítmica": "Mango con chile",
+    "Armoniosa": "Durazno y almendra",
+    "Expresiva": "Frambuesa y menta",
+    "Intensa": "Chocolate y cereza",
+    "Suave": "Pera y miel",
+    "Energética": "Maracuyá y naranja",
+    "Relajante": "Lavanda y mora",
+    "Nostálgica": "Manzana y canela",
+    "Alegre": "Piña y coco",
+    "Melancólica": "Arándanos y té verde",
+    "Emotiva": "Ciruela y vainilla",
+    "Vibrante": "Kiwi y limón",
+    "Pegajosa": "Caramelo y plátano",
+    "Hipnótica": "Higo y jengibre",
+    "Dramática": "Uva y nuez",
+    "Sentimental": "Moras y cardamomo",
+    "Potente": "Café y avellana",
+    "Innovadora": "Pitahaya y lima",
+    "Clásica": "Fresa y crema",
+    "Bailable": "Cereza y limón",
+    "Electrizante": "Toronja y pimienta",
+    "Atmosférica": "Nuez moscada y durazno",
+    "Romántica": "Rosas y frambuesa",
+    "Profunda": "Mango y cúrcuma",
+    "Épica": "Maracuyá y chocolate",
+    "Espiritual": "Jazmín y miel",
+    "Reflexiva": "Pera y lavanda",
+    "Oscura": "Zarzamora y anís",
+    "Luminosa": "Mandarina y jengibre",
+    "Distorsionada": "Melón y romero",
+    "Serena": "Coco y lavanda",
+    "Envolvente": "Naranja y avellana",
+    "Dinámica": "Papaya y limón",
+    "Hipnotizante": "Uva y jengibre",
+    "Étnica": "Guayaba y canela",
+    "Sofisticada": "Pistache y fresa",
+    "Cinemática": "Cereza y chocolate",
+    "Tranquila": "Almendra y vainilla",
+    "Explosiva": "Maracuyá y chile",
+    "Experimental": "Pitahaya y pimienta",
+    "Pegadiza": "Kiwi y piña",
+    "Psicodélica": "Nuez y caramelo",
+    "Seductora": "Higo y chocolate",
+    "Inspiradora": "Manzana y miel",
+    "Caótica": "Lima y chile",
+    "Elevadora": "Mango y menta",
+    "Sorpresiva": "Mandarina y pimienta",
+    "Íntima": "Fresa y coco",
+    "Contagiosa": "Maracuyá y piña"
+}
 
-# FUNCIÓN PARA GUARDAR RESPUESTAS EN GOOGLE SHEETS
-def guardar_en_sheets(datos):
-    worksheet.append_row(datos)
+st.title("🎵 Encuesta de Sabores Musicales 🍯")
+st.write("Arrastra las palabras que describan tu canción al círculo y descubre tu mermelada perfecta.")
 
-# INTERFAZ STREAMLIT
-st.title("Encuesta Interactiva: ¡Descubre Tu Mermelada Perfecta! 🍓🍊")
+# Sección de palabras clave (draggable)
+st.subheader("Selecciona tus palabras:")
 
-# PEDIR NOMBRE Y CANCIÓN DE SPOTIFY
-nombre = st.text_input("Tu nombre:")
-spotify_link = st.text_input("Comparte un enlace de una canción de Spotify:")
+selected_words = []
+with dnd_container():
+    for word in sabores.keys():
+        if dnd_item(word):
+            selected_words.append(word)
 
-# SECCIÓN DE SABOR Y TOPPING
-st.subheader("Explora los Sabores y Toppings 🍯")
-st.write("Antes de responder la encuesta, conoce los posibles sabores de mermeladas y toppings.")
-
-if st.button("Descubrir sabores y toppings"):
-    st.write("🔹 **Ejemplo de sabores:** Dulce con un toque cítrico, intenso y tropical, etc.")
-    st.write("🔹 **Ejemplo de toppings:** Almendras caramelizadas, chips de chocolate, etc.")
-
-st.subheader("Encuesta Interactiva")
-pregunta1 = st.radio("¿Qué tipo de sabores prefieres?", ["Dulce", "Ácido", "Agridulce"])
-pregunta2 = st.radio("¿Te gustan los sabores intensos o suaves?", ["Intensos", "Suaves"])
-pregunta3 = st.radio("¿Qué textura prefieres?", ["Cremosa", "Con trozos de fruta"])
-pregunta4 = st.radio("¿Prefieres mermeladas clásicas o con un giro innovador?", ["Clásicas", "Innovadoras"])
-pregunta5 = st.radio("Elige un topping para acompañar tu mermelada:", ["Nueces", "Chispas de chocolate", "Semillas de chía", "Coco rallado"])
-
-# GENERAR RESULTADO
-if st.button("Descubrir mi combinación"):
-    combinaciones = {
-        ("Dulce", "Suaves", "Cremosa", "Clásicas"): "Fresa - Durazno",
-        ("Dulce", "Suaves", "Cremosa", "Innovadoras"): "Mango - Maracuyá",
-        ("Ácido", "Intensos", "Con trozos de fruta", "Clásicas"): "Frambuesa - Kiwi",
-        ("Agridulce", "Intensos", "Cremosa", "Innovadoras"): "Piña - Naranja",
-    }
-    resultado = combinaciones.get((pregunta1, pregunta2, pregunta3, pregunta4), "Combinación única personalizada")
-
-    # REGISTRAR RESPUESTAS CON FECHA Y HORA
-    fecha_hora = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-    respuestas = [fecha_hora, nombre, spotify_link, pregunta1, pregunta2, pregunta3, pregunta4, pregunta5, resultado]
-    guardar_en_sheets(respuestas)
-
-    # MOSTRAR RESULTADO AL USUARIO
-    st.success(f"¡Tu combinación perfecta es: **{resultado}**! 🍓🍊")
-
-# DESCARGA DEL ARCHIVO SOLO PARA ADMINISTRADOR
-st.subheader("Descarga de Resultados (Solo Administrador)")
-password = st.text_input("Ingresa la clave de administrador:", type="password")
-
-if password == "mermelada123":
-    if st.button("Descargar respuestas"):
-        data = worksheet.get_all_values()
-        df = pd.DataFrame(data, columns=["Fecha", "Nombre", "Spotify", "Sabor", "Intensidad", "Textura", "Estilo", "Topping", "Combinación"])
-        df.to_csv("respuestas.csv", index=False)
-        st.download_button("Descargar respuestas", df.to_csv(index=False).encode("utf-8"), "respuestas.csv", "text/csv")
-
+# Área de drop (círculo)
+st.subheader("🔵 Arrastra aquí tus palabras")
+drop_area = dnd_container()
+if drop_area:
+    st.write("### 🍯 Tu sabor de mermelada 🍯")
+    if selected_words:
+        sabores_seleccionados = [sabores[word] for word in selected_words]
+        st.success(f"Tu mermelada ideal es: {', '.join(set(sabores_seleccionados))}")
+    else:
+        st.warning("Arrastra al menos una palabra para generar un sabor.")
