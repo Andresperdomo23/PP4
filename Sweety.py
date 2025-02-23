@@ -1,88 +1,68 @@
 import streamlit as st
+import gspread
+from oauth2client.service_account import ServiceAccountCredentials
 import pandas as pd
-import os
-import json
-from datetime import datetime
-from pydrive2.auth import GoogleAuth
-from pydrive2.drive import GoogleDrive
+import datetime
 
-def autenticar_google_drive():
-    """Autenticación en Google Drive usando credenciales JSON."""
-    gauth = GoogleAuth()
-    gauth.LoadCredentialsFile("credenciales_drive.json")  # Cargar credenciales desde el archivo JSON
-    if gauth.credentials is None:
-        gauth.LocalWebserverAuth()
-    elif gauth.access_token_expired:
-        gauth.Refresh()
-    else:
-        gauth.Authorize()
-    return GoogleDrive(gauth)
+# CONFIGURAR GOOGLE SHEETS
+scope = ["https://spreadsheets.google.com/feeds", "https://www.googleapis.com/auth/drive"]
+creds = ServiceAccountCredentials.from_json_keyfile_name("tu_archivo_credenciales.json", scope)
+client = gspread.authorize(creds)
+spreadsheet = client.open("Encuesta_Mermelada")  # Nombre del Google Sheets
+worksheet = spreadsheet.sheet1  # Primera hoja del documento
 
-def guardar_en_drive(respuestas):
-    """Guarda las respuestas en un archivo CSV y lo sube a Google Drive."""
-    drive = autenticar_google_drive()
-    
-    archivo_csv = "respuestas_encuesta.csv"
-    nuevo_registro = pd.DataFrame([{
-        "Fecha y Hora": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
-        "Nombre": respuestas["nombre"],
-        "Canción": respuestas["cancion"],
-        "Textura": respuestas["textura"],
-        "Intensidad": respuestas["intensidad"],
-        "Frutas Base": respuestas["frutas"],
-        "Topping": respuestas["topping"]
-    }])
-    
-    if os.path.exists(archivo_csv):
-        nuevo_registro.to_csv(archivo_csv, mode="a", index=False, header=False)
-    else:
-        nuevo_registro.to_csv(archivo_csv, index=False)
-    
-    # Subir a Google Drive
-    file_drive = drive.CreateFile({"title": archivo_csv, "parents": [{"id": "1UFkxlzexjA07woQy7RpUCgsEzTWtWRCm?hl=es"}]})
-    file_drive.SetContentFile(archivo_csv)
-    file_drive.Upload()
-    
-    return "✅ Datos guardados en Google Drive exitosamente."
+# FUNCIÓN PARA GUARDAR RESPUESTAS EN GOOGLE SHEETS
+def guardar_en_sheets(datos):
+    worksheet.append_row(datos)
 
-# Interfaz con Streamlit
-st.title("🎶 Generador de Experiencia Sensorial Musical 🍓")
+# INTERFAZ STREAMLIT
+st.title("Encuesta Interactiva: ¡Descubre Tu Mermelada Perfecta! 🍓🍊")
 
-# Opción para conocer el sabor y topping antes de la encuesta
-if st.checkbox("🔍 Quiero conocer el sabor y topping antes de responder la encuesta"):
-    st.write("Cada mermelada tiene una combinación única de frutas y toppings que reflejan sensaciones musicales. ¡Explora y elige la tuya!")
-    fruta_demo = st.selectbox("Elige un perfil de sabor", ["Maracuyá, limón", "Manzana, pera", "Arándanos, moras", "Piña, tamarindo"])
-    topping_demo = st.selectbox("Elige un topping complementario", ["Miel o vainilla", "Ralladura de cítricos", "Hierbas frescas", "Chocolate oscuro o especias"])
-    st.success(f"Tu elección: **{fruta_demo}** con un toque de **{topping_demo}**")
-    
-# Continuar con la encuesta
-st.subheader("🎤 Ahora responde para descubrir tu combinación personalizada")
+# PEDIR NOMBRE Y CANCIÓN DE SPOTIFY
+nombre = st.text_input("Tu nombre:")
+spotify_link = st.text_input("Comparte un enlace de una canción de Spotify:")
 
-# Campos de entrada para el usuario
-nombre = st.text_input("📝 Ingresa tu nombre")
-cancion = st.text_input("🎵 Pega el link de tu canción en Spotify")
+# SECCIÓN DE SABOR Y TOPPING
+st.subheader("Explora los Sabores y Toppings 🍯")
+st.write("Antes de responder la encuesta, conoce los posibles sabores de mermeladas y toppings.")
 
-sensacion_cuerpo = st.selectbox("Si una canción pudiera sentirse físicamente, ¿cómo crees que sería la sensación en tu cuerpo?", 
-    ["Algo ligero y fluido", "Un golpe de energía", "Una vibración profunda", "Una sensación cambiante"])
+if st.button("Descubrir sabores y toppings"):
+    st.write("🔹 **Ejemplo de sabores:** Dulce con un toque cítrico, intenso y tropical, etc.")
+    st.write("🔹 **Ejemplo de toppings:** Almendras caramelizadas, chips de chocolate, etc.")
 
-imagen_recuerdo = st.selectbox("Cuando escuchas tu música favorita, ¿qué tipo de recuerdo o imagen viene más a tu mente?", 
-    ["Día soleado y despreocupado", "Noche intensa y emocionante", "Momento íntimo y nostálgico", "Algo abstracto y difícil de definir"])
+st.subheader("Encuesta Interactiva")
+pregunta1 = st.radio("¿Qué tipo de sabores prefieres?", ["Dulce", "Ácido", "Agridulce"])
+pregunta2 = st.radio("¿Te gustan los sabores intensos o suaves?", ["Intensos", "Suaves"])
+pregunta3 = st.radio("¿Qué textura prefieres?", ["Cremosa", "Con trozos de fruta"])
+pregunta4 = st.radio("¿Prefieres mermeladas clásicas o con un giro innovador?", ["Clásicas", "Innovadoras"])
+pregunta5 = st.radio("Elige un topping para acompañar tu mermelada:", ["Nueces", "Chispas de chocolate", "Semillas de chía", "Coco rallado"])
 
-impacto_cancion = st.selectbox("¿Cómo describirías el impacto de una canción que realmente te emociona?", 
-    ["Directo y explosivo", "Progresivo y creciente", "Sutil pero persistente", "Impredecible y cambiante"])
-
-percepcion_tiempo = st.selectbox("¿Cómo sientes el paso del tiempo dentro de una canción que te gusta?", 
-    ["Fluye sin interrupciones", "Ciclo que regresa", "Viaje con cambios de rumbo", "Explosión breve e intensa"])
-
-if st.button("Generar Experiencia Sensorial"):
-    respuestas_usuario = {
-        "nombre": nombre,
-        "cancion": cancion,
-        "textura": sensacion_cuerpo,
-        "intensidad": imagen_recuerdo,
-        "frutas": impacto_cancion,
-        "topping": percepcion_tiempo
+# GENERAR RESULTADO
+if st.button("Descubrir mi combinación"):
+    combinaciones = {
+        ("Dulce", "Suaves", "Cremosa", "Clásicas"): "Fresa - Durazno",
+        ("Dulce", "Suaves", "Cremosa", "Innovadoras"): "Mango - Maracuyá",
+        ("Ácido", "Intensos", "Con trozos de fruta", "Clásicas"): "Frambuesa - Kiwi",
+        ("Agridulce", "Intensos", "Cremosa", "Innovadoras"): "Piña - Naranja",
     }
-    resultado = guardar_en_drive(respuestas_usuario)
-    st.success(resultado)
-    st.write("📂 Tus datos han sido guardados en Google Drive.")
+    resultado = combinaciones.get((pregunta1, pregunta2, pregunta3, pregunta4), "Combinación única personalizada")
+
+    # REGISTRAR RESPUESTAS CON FECHA Y HORA
+    fecha_hora = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    respuestas = [fecha_hora, nombre, spotify_link, pregunta1, pregunta2, pregunta3, pregunta4, pregunta5, resultado]
+    guardar_en_sheets(respuestas)
+
+    # MOSTRAR RESULTADO AL USUARIO
+    st.success(f"¡Tu combinación perfecta es: **{resultado}**! 🍓🍊")
+
+# DESCARGA DEL ARCHIVO SOLO PARA ADMINISTRADOR
+st.subheader("Descarga de Resultados (Solo Administrador)")
+password = st.text_input("Ingresa la clave de administrador:", type="password")
+
+if password == "mermelada123":
+    if st.button("Descargar respuestas"):
+        data = worksheet.get_all_values()
+        df = pd.DataFrame(data, columns=["Fecha", "Nombre", "Spotify", "Sabor", "Intensidad", "Textura", "Estilo", "Topping", "Combinación"])
+        df.to_csv("respuestas.csv", index=False)
+        st.download_button("Descargar respuestas", df.to_csv(index=False).encode("utf-8"), "respuestas.csv", "text/csv")
+
