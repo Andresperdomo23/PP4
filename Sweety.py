@@ -4,7 +4,7 @@ import os
 import json
 from datetime import datetime
 from pydrive2.auth import GoogleAuth
-from pydrive.drive import GoogleDrive
+from pydrive2.drive import GoogleDrive
 
 def autenticar_google_drive():
     """Autenticación en Google Drive usando credenciales JSON."""
