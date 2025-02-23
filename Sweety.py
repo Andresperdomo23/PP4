@@ -3,7 +3,7 @@ import pandas as pd
 import os
 import json
 from datetime import datetime
-from pydrive.auth import GoogleAuth
+from pydrive2.auth import GoogleAuth
 from pydrive.drive import GoogleDrive
 
 def autenticar_google_drive():
