@@ -1,55 +1,55 @@
 import streamlit as st
 
-# Configurar la página
-st.set_page_config(page_title="Encuentra el Sabor de tu Canción", layout="wide")
+# Configuración de la página
+st.set_page_config(page_title="Encuesta de Música y Mermelada", layout="centered")
 
-# Diccionario de palabras y sabores
+# Diccionario de relación palabra - sabor de mermelada
 sabores_mermelada = {
-    "Dulce": "Fresa", "Melancólica": "Mora", "Alegre": "Durazno", "Intensa": "Frambuesa",
-    "Suave": "Vainilla", "Explosiva": "Maracuyá", "Misteriosa": "Higo", "Romántica": "Rosa",
-    "Nostálgica": "Manzana", "Brillante": "Naranja", "Sombría": "Cereza negra", "Relajante": "Lavanda",
-    "Densa": "Chocolate", "Fluida": "Miel", "Dramática": "Granada", "Energética": "Limón",
-    "Épica": "Mango", "Serena": "Pera", "Majestuosa": "Uva", "Luminosa": "Piña",
-    "Orgánica": "Higo", "Abstracta": "Kiwi", "Hipnótica": "Coco", "Caótica": "Guayaba",
-    "Groovy": "Plátano", "Emotiva": "Arándano", "Clásica": "Frutilla", "Futurista": "Papaya",
-    "Oscura": "Zarzamora", "Ligera": "Melón", "Envolvente": "Mandarina", "Radiante": "Maracuyá",
-    "Agresiva": "Toronja", "Eterna": "Dátil", "Sofisticada": "Higo", "Retro": "Ciruela",
-    "Íntima": "Avellana", "Mágica": "Lychee", "Festiva": "Frutas tropicales", "Refrescante": "Sandía",
-    "Calmante": "Manzanilla", "Introspectiva": "Tamarindo", "Contundente": "Jengibre",
-    "Delicada": "Nuez", "Vibrante": "Piña colada", "Exótica": "Pitahaya", "Brumosa": "Café",
-    "Celestial": "Violeta", "Cálida": "Canela", "Fría": "Menta"
+    "Dulce": "Fresa",
+    "Melancólica": "Mora",
+    "Alegre": "Durazno",
+    "Intensa": "Frambuesa",
+    "Suave": "Vainilla",
+    "Explosiva": "Maracuyá",
+    "Misteriosa": "Higo",
+    "Romántica": "Rosa",
+    "Nostálgica": "Manzana",
+    "Brillante": "Naranja",
+    "Sombría": "Cereza negra"
 }
 
-# Lista de palabras disponibles
-palabras = list(sabores_mermelada.keys())
+palabras = list(sabores_mermelada.keys())  # Lista de palabras
 
-# Diseño de la app con columnas (para simular un círculo)
-st.title("🎵 Encuentra el Sabor de tu Canción 🎶")
-st.write("Selecciona palabras que describan tu canción y descubre el sabor de mermelada perfecto.")
+# Inicializar la sesión para almacenar palabras seleccionadas
+if "seleccionadas" not in st.session_state:
+    st.session_state["seleccionadas"] = []
 
-col1, col2, col3 = st.columns([2, 3, 2])
+st.title("🎵 Encuesta: Descubre el Sabor de tu Canción 🎶")
+st.write("Arrastra palabras al área central para descubrir tu mermelada ideal.")
 
-# Columna izquierda con palabras
+# Diseño de columnas para simular Drag & Drop
+col1, col2 = st.columns([2, 3])
+
+# Sección de palabras disponibles (Columna Izquierda)
 with col1:
-    st.subheader("🎤 Selecciona tus palabras:")
-    seleccionadas = st.multiselect("🔹 Elige hasta 5 palabras:", palabras)
+    st.subheader("🎤 Palabras disponibles:")
+    for palabra in palabras:
+        if st.button(palabra, key=palabra):  # Cada palabra es un botón interactivo
+            if palabra not in st.session_state["seleccionadas"] and len(st.session_state["seleccionadas"]) < 5:
+                st.session_state["seleccionadas"].append(palabra)
 
-# Columna central con "círculo"
+# Sección del "Círculo Central" (Columna Derecha)
 with col2:
-    st.subheader("🎯 Zona de Evaluación")
-    st.markdown("⬇️ **Aquí se mostrará el sabor de tu mermelada** ⬇️")
-    
-    if seleccionadas:
-        sabores_elegidos = [sabores_mermelada[p] for p in seleccionadas]
-        st.success(f"🍓 **Tu mermelada ideal es:** {', '.join(set(sabores_elegidos))} 🎶")
+    st.subheader("🎯 Arrastra aquí tus palabras")
+    st.markdown("⬇️ **Zona de Evaluación** ⬇️")
+
+    if st.session_state["seleccionadas"]:
+        st.write("**Palabras seleccionadas:**", ", ".join(st.session_state["seleccionadas"]))
+        sabores_elegidos = [sabores_mermelada[p] for p in st.session_state["seleccionadas"]]
+        st.success(f"🍓 **Tu mermelada perfecta es:** {', '.join(set(sabores_elegidos))} 🎶")
+
+        # Botón para limpiar selección
+        if st.button("🔄 Reiniciar selección"):
+            st.session_state["seleccionadas"] = []
     else:
-        st.warning("Selecciona al menos una palabra para obtener el sabor de la mermelada.")
-
-# Columna derecha con más palabras para ayudar al usuario
-with col3:
-    st.subheader("🎶 Más palabras:")
-    st.write(", ".join(palabras[:15]) + " ...")  # Muestra algunas palabras de ejemplo
-
-# Pie de página
-st.write("---")
-st.write("💡 **Sugerencia:** Prueba combinaciones distintas para encontrar tu sabor ideal.")
+        st.warning("Selecciona palabras para generar tu sabor de mermelada.")
