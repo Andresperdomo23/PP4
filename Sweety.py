@@ -78,3 +78,4 @@ if drop_area:
         st.success(f"Tu mermelada ideal es: {', '.join(set(sabores_seleccionados))}")
     else:
         st.warning("Arrastra al menos una palabra para generar un sabor.")
+
