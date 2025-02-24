@@ -3,19 +3,7 @@ import streamlit as st
 # Configurar la página
 st.set_page_config(page_title="Encuentra el Sabor de tu Canción", layout="centered")
 
-# Lista de palabras musicales
-palabras_musicales = [
-    "Dulce", "Melancólica", "Alegre", "Intensa", "Suave", "Explosiva", "Misteriosa",
-    "Romántica", "Nostálgica", "Brillante", "Sombría", "Relajante", "Densa", "Fluida",
-    "Dramática", "Energética", "Épica", "Serena", "Majestuosa", "Luminosa",
-    "Orgánica", "Abstracta", "Hipnótica", "Caótica", "Groovy", "Emotiva", "Clásica",
-    "Futurista", "Oscura", "Ligera", "Envolvente", "Radiante", "Agresiva", "Eterna",
-    "Sofisticada", "Retro", "Íntima", "Mágica", "Festiva", "Refrescante", "Calmante",
-    "Introspectiva", "Contundente", "Delicada", "Vibrante", "Exótica", "Brumosa", 
-    "Celestial", "Cálida", "Fría"
-]
-
-# Diccionario de relación palabra - sabor de mermelada
+# Diccionario de palabras musicales y sus sabores de mermelada
 sabores_mermelada = {
     "Dulce": "Fresa", "Melancólica": "Mora", "Alegre": "Durazno", "Intensa": "Frambuesa",
     "Suave": "Vainilla", "Explosiva": "Maracuyá", "Misteriosa": "Higo", "Romántica": "Rosa",
@@ -32,16 +20,33 @@ sabores_mermelada = {
     "Celestial": "Violeta", "Cálida": "Canela", "Fría": "Menta"
 }
 
-# Diseño de la aplicación
+# Interfaz visual
 st.title("🎵 Encuentra el Sabor de tu Canción 🎶")
-st.write("Selecciona palabras que describen la canción y descubre el sabor de mermelada perfecto.")
+st.write("Selecciona palabras que describan tu canción y descubre el sabor de mermelada perfecto.")
 
-# Lista de selección de palabras
-seleccionadas = st.multiselect("🔹 Elige hasta 5 palabras:", palabras_musicales)
+# Diseño visual: Columnas con palabras alrededor de un círculo en el centro
+col1, col2, col3 = st.columns([2, 3, 2])
 
-# Mostrar el sabor de la mermelada correspondiente
-if seleccionadas:
-    sabores_elegidos = [sabores_mermelada.get(p, "Desconocido") for p in seleccionadas]
-    st.success(f"🍓 **Tu mermelada perfecta es:** {', '.join(set(sabores_elegidos))} 🎶")
-else:
-    st.warning("Selecciona al menos una palabra para obtener el sabor de la mermelada.")
+# Columna 1: Algunas palabras a la izquierda
+with col1:
+    st.subheader("🎤 Selección:")
+    seleccionadas = st.multiselect("🔹 Elige hasta 5 palabras:", list(sabores_mermelada.keys()), max_selections=5)
+
+# Columna 2 (Centro): Simulación del "círculo"
+with col2:
+    st.markdown("### 🎯 Arrastra aquí tus palabras")
+    st.markdown("⬇️ ⭕ **Círculo Virtual** ⭕ ⬇️")
+    
+    if seleccionadas:
+        sabores_elegidos = [sabores_mermelada.get(p, "Desconocido") for p in seleccionadas]
+        st.success(f"🍓 **Tu mermelada perfecta es:** {', '.join(set(sabores_elegidos))} 🎶")
+    else:
+        st.warning("Selecciona al menos una palabra para obtener el sabor de la mermelada.")
+
+# Columna 3: Otras palabras a la derecha (solo para diseño visual)
+with col3:
+    st.subheader("🎶 Más palabras disponibles:")
+
+# Pie de página
+st.write("---")
+st.write("💡 **Sugerencia:** Experimenta con diferentes combinaciones para descubrir nuevos sabores.")
