@@ -42,9 +42,14 @@ with col1:
 with col2:
     st.subheader("🎯 Arrastra aquí tus palabras")
     st.markdown("⬇️ **Zona de Evaluación** ⬇️")
+    st.markdown("""
+    <div style="border: 2px dashed #4CAF50; padding: 20px; text-align: center;">
+        <h4>Palabras seleccionadas:</h4>
+        <p style="font-size: 18px;">{}</p>
+    </div>
+    """.format(", ".join(st.session_state["seleccionadas"]) if st.session_state["seleccionadas"] else "Ninguna"), unsafe_allow_html=True)
 
     if st.session_state["seleccionadas"]:
-        st.write("**Palabras seleccionadas:**", ", ".join(st.session_state["seleccionadas"]))
         sabores_elegidos = [sabores_mermelada[p] for p in st.session_state["seleccionadas"]]
         st.success(f"🍓 **Tu mermelada perfecta es:** {', '.join(set(sabores_elegidos))} 🎶")
 
