@@ -37,7 +37,7 @@ st.title("🎵 Encuentra el Sabor de tu Canción 🎶")
 st.write("Selecciona palabras que describen la canción y descubre el sabor de mermelada perfecto.")
 
 # Lista de selección de palabras
-seleccionadas = st.multiselect("🔹 Elige hasta 5 palabras:", palabras_musicales, max_selections=5)
+seleccionadas = st.multiselect("🔹 Elige hasta 5 palabras:", palabras_musicales)
 
 # Mostrar el sabor de la mermelada correspondiente
 if seleccionadas:
