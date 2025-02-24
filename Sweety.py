@@ -1,6 +1,9 @@
 import streamlit as st
 
-# Palabras que describen la canción
+# Configuración de la página
+st.set_page_config(page_title="Encuentra el Sabor de tu Canción", layout="centered")
+
+# Palabras descriptivas para la música
 palabras_musicales = [
     "Dulce", "Melancólica", "Alegre", "Intensa", "Suave", "Explosiva", "Misteriosa",
     "Romántica", "Nostálgica", "Brillante", "Sombría", "Relajante", "Densa", "Fluida",
@@ -66,27 +69,20 @@ sabores_mermelada = {
     "Fría": "Menta"
 }
 
-# Título de la app
+# Diseño de la app
 st.title("🎵 Encuentra el Sabor de tu Canción 🎶")
+st.write("Selecciona palabras que describen la canción y descubre el sabor de mermelada perfecto.")
 
-# Instrucciones
-st.markdown("💡 **Arrastra palabras al círculo central para descubrir el sabor de mermelada perfecto para tu canción.**")
+# Selección de palabras
+seleccionadas = st.multiselect("🔹 Elige hasta 5 palabras:", palabras_musicales, max_selections=5)
 
-# Diseño de la interfaz
-col1, col2 = st.columns([2, 1])
+# Mostrar el sabor de la mermelada correspondiente
+if seleccionadas:
+    sabores_elegidos = [sabores_mermelada.get(p, "Desconocido") for p in seleccionadas]
+    st.success(f"🍓 **Tu mermelada perfecta es:** {', '.join(set(sabores_elegidos))} 🎶")
 
-# Sección de palabras
-with col1:
-    st.markdown("### 🎤 Describe tu canción con estas palabras:")
-    seleccionadas = st.multiselect("Selecciona palabras que describan la canción:", palabras_musicales)
+# Mensaje cuando no hay selección
+else:
+    st.warning("Selecciona al menos una palabra para obtener el sabor de la mermelada.")
 
-# Sección del círculo central
-with col2:
-    st.markdown("### 🎯 Tu selección:")
-    st.write("Arrastra aquí las palabras que describen la canción")
-
-    # Mostramos los sabores según las palabras seleccionadas
-    if seleccionadas:
-        sabores_elegidos = [sabores_mermelada.get(palabra, "Sin sabor definido") for palabra in seleccionadas]
-        st.success(f"🥄 Tu mermelada perfecta es: {', '.join(set(sabores_elegidos))} 🎶")
 
