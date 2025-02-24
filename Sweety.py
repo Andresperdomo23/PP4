@@ -1,9 +1,9 @@
 import streamlit as st
 
 # Configurar la página
-st.set_page_config(page_title="Encuentra el Sabor de tu Canción", layout="centered")
+st.set_page_config(page_title="Encuentra el Sabor de tu Canción", layout="wide")
 
-# Diccionario de palabras musicales y sus sabores de mermelada
+# Diccionario de palabras y sabores
 sabores_mermelada = {
     "Dulce": "Fresa", "Melancólica": "Mora", "Alegre": "Durazno", "Intensa": "Frambuesa",
     "Suave": "Vainilla", "Explosiva": "Maracuyá", "Misteriosa": "Higo", "Romántica": "Rosa",
@@ -20,33 +20,36 @@ sabores_mermelada = {
     "Celestial": "Violeta", "Cálida": "Canela", "Fría": "Menta"
 }
 
-# Interfaz visual
+# Lista de palabras disponibles
+palabras = list(sabores_mermelada.keys())
+
+# Diseño de la app con columnas (para simular un círculo)
 st.title("🎵 Encuentra el Sabor de tu Canción 🎶")
 st.write("Selecciona palabras que describan tu canción y descubre el sabor de mermelada perfecto.")
 
-# Diseño visual: Columnas con palabras alrededor de un círculo en el centro
 col1, col2, col3 = st.columns([2, 3, 2])
 
-# Columna 1: Algunas palabras a la izquierda
+# Columna izquierda con palabras
 with col1:
-    st.subheader("🎤 Selección:")
-    seleccionadas = st.multiselect("🔹 Elige hasta 5 palabras:", list(sabores_mermelada.keys()), max_selections=5)
+    st.subheader("🎤 Selecciona tus palabras:")
+    seleccionadas = st.multiselect("🔹 Elige hasta 5 palabras:", palabras)
 
-# Columna 2 (Centro): Simulación del "círculo"
+# Columna central con "círculo"
 with col2:
-    st.markdown("### 🎯 Arrastra aquí tus palabras")
-    st.markdown("⬇️ ⭕ **Círculo Virtual** ⭕ ⬇️")
+    st.subheader("🎯 Zona de Evaluación")
+    st.markdown("⬇️ **Aquí se mostrará el sabor de tu mermelada** ⬇️")
     
     if seleccionadas:
-        sabores_elegidos = [sabores_mermelada.get(p, "Desconocido") for p in seleccionadas]
-        st.success(f"🍓 **Tu mermelada perfecta es:** {', '.join(set(sabores_elegidos))} 🎶")
+        sabores_elegidos = [sabores_mermelada[p] for p in seleccionadas]
+        st.success(f"🍓 **Tu mermelada ideal es:** {', '.join(set(sabores_elegidos))} 🎶")
     else:
         st.warning("Selecciona al menos una palabra para obtener el sabor de la mermelada.")
 
-# Columna 3: Otras palabras a la derecha (solo para diseño visual)
+# Columna derecha con más palabras para ayudar al usuario
 with col3:
-    st.subheader("🎶 Más palabras disponibles:")
+    st.subheader("🎶 Más palabras:")
+    st.write(", ".join(palabras[:15]) + " ...")  # Muestra algunas palabras de ejemplo
 
 # Pie de página
 st.write("---")
-st.write("💡 **Sugerencia:** Experimenta con diferentes combinaciones para descubrir nuevos sabores.")
+st.write("💡 **Sugerencia:** Prueba combinaciones distintas para encontrar tu sabor ideal.")
