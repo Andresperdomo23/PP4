@@ -52,7 +52,7 @@ st.title("🎵 Encuesta: Descubre el Sabor de tu Canción 🎶")
 st.write("Arrastra palabras al área central para descubrir tu mermelada ideal.")
 
 # Diseño de columnas para mostrar palabras y el área de combinación
-col1, col2, col3 = st.columns([1, 1, 2])  # Dos columnas para palabras y una para el área central
+col1, col2, col3, col4 = st.columns([1, 1, 2, 1])  # Dos columnas para palabras y dos para el área central
 
 # Sección de palabras disponibles (Columna Izquierda)
 with col1:
@@ -70,7 +70,7 @@ with col2:
             if palabra not in st.session_state["seleccionadas"] and len(st.session_state["seleccionadas"]) < 5:
                 st.session_state["seleccionadas"].append(palabra)
 
-# Sección del "Círculo Central"
+# Sección del "Círculo Central" (entre las dos columnas de palabras)
 with col3:
     st.subheader("🎯 Arrastra aquí tus palabras")
     st.markdown("⬇️ **Zona de Evaluación** ⬇️")
@@ -94,3 +94,7 @@ with col3:
             st.session_state["seleccionadas"] = []
     else:
         st.warning("Selecciona palabras para generar tu sabor de mermelada.")
+
+# Columna adicional a la derecha (puedes usarla para más información o dejarla vacía)
+with col4:
+    st.write("")  # Puedes dejar esto vacío o agregar más contenido si lo deseas
