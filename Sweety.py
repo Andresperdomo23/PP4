@@ -39,7 +39,7 @@ if "seleccionadas" not in st.session_state:
 def guardar_respuestas(respuestas):
     # Autenticación con Google Sheets
     scope = ["https://spreadsheets.google.com/feeds", "https://www.googleapis.com/auth/drive"]
-    creds = ServiceAccountCredentials.from_json_keyfile_name("path/to/your/credentials.json", scope)
+    creds = ServiceAccountCredentials.from_json_keyfile_name("credentials.json", scope)  # Cambia la ruta si es necesario
     client = gspread.authorize(creds)
 
     # Abrir la hoja de cálculo
@@ -66,37 +66,4 @@ with col1:
 # Sección de palabras disponibles (Columna Derecha)
 with col2:
     st.subheader("🎤 Palabras disponibles (Derecha):")
-    palabras_derecha = list(sabores_mermelada.keys())[len(sabores_mermelada)//2:]  # Segunda mitad
-    for palabra in palabras_derecha:
-        if st.button(palabra, key=palabra):
-            if palabra not in st.session_state["seleccionadas"] and len(st.session_state["seleccionadas"]) < 5:
-                st.session_state["seleccionadas"].append(palabra)
-
-# Sección del "Círculo Central" (entre las dos columnas de palabras)
-with col3:
-    st.subheader("🎯 Arrastra aquí tus palabras")
-    st.markdown("⬇️ **Zona de Evaluación** ⬇️")
-
-    if st.session_state["seleccionadas"]:
-        st.write("**Palabras seleccionadas:**", ", ".join(st.session_state["seleccionadas"]))
-        
-        sabores_elegidos = [sabores_mermelada[p][0] for p in st.session_state["seleccionadas"]]
-        toppings_elegidos = [sabores_mermelada[p][1] for p in st.session_state["seleccionadas"]]
-
-        st.success(f"🍓 **Tu mermelada perfecta es:** {', '.join(set(sabores_elegidos))} 🎶")
-        st.info(f"🥄 **Toppings sugeridos:** {', '.join(set(toppings_elegidos))}")
-
-        # Guardar respuestas en Google Sheets
-        if st.button("💾 Guardar Respuestas"):
-            guardar_respuestas(st.session_state["seleccionadas"])
-            st.success("✅ Respuestas guardadas en Google Sheets.")
-
-        # Botón para limpiar selección
-        if st.button("🔄 Reiniciar selección"):
-            st.session_state["seleccionadas"] = []
-    else:
-        st.warning("Selecciona palabras para generar tu sabor de mermelada.")
-
-# Columna adicional a la derecha (puedes usarla para más información o dejarla vacía)
-with col4:
-    st.write("")  # Puedes dejar esto vacío o agregar más contenido si lo deseas
+    palabras_derecha = list(sabores_mermelada.keys())[len(sabores_mermelada)//2:]  # Segunda
