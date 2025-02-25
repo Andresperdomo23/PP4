@@ -1,11 +1,6 @@
-try:
-    import gspread
-    from oauth2client.service_account import ServiceAccountCredentials
-except ImportError as e:
-    st.error("Error al importar las bibliotecas. Asegúrate de que gspread y oauth2client estén instalados.")
-    raise e
-
 import streamlit as st
+import gspread
+from oauth2client.service_account import ServiceAccountCredentials
 
 # Configurar la página
 st.set_page_config(page_title="Encuesta de Música y Mermelada", layout="centered")
