@@ -57,7 +57,8 @@ col1, col2, col3, col4 = st.columns([1, 1, 2, 1])  # Dos columnas para palabras 
 # Sección de palabras disponibles (Columna Izquierda)
 with col1:
     st.subheader("🎤 Palabras disponibles (Izquierda):")
-    for palabra in list(sabores_mermelada.keys())[:len(sabores_mermelada)//2]:  # Primera mitad
+    palabras_izquierda = list(sabores_mermelada.keys())[:len(sabores_mermelada)//2]  # Primera mitad
+    for palabra in palabras_izquierda:
         if st.button(palabra, key=palabra):
             if palabra not in st.session_state["seleccionadas"] and len(st.session_state["seleccionadas"]) < 5:
                 st.session_state["seleccionadas"].append(palabra)
@@ -65,7 +66,8 @@ with col1:
 # Sección de palabras disponibles (Columna Derecha)
 with col2:
     st.subheader("🎤 Palabras disponibles (Derecha):")
-    for palabra in list(sabores_mermelada.keys())[len(sabores_mermelada)//2:]:  # Segunda mitad
+    palabras_derecha = list(sabores_mermelada.keys())[len(sabores_mermelada)//2:]  # Segunda mitad
+    for palabra in palabras_derecha:
         if st.button(palabra, key=palabra):
             if palabra not in st.session_state["seleccionadas"] and len(st.session_state["seleccionadas"]) < 5:
                 st.session_state["seleccionadas"].append(palabra)
