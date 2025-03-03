@@ -45,12 +45,12 @@ st.subheader("🔹 Selecciona 10 palabras que describan la canción")
 col1, col2, col3 = st.columns(3)
 
 # Mostrar palabras como botones interactivos en las columnas
-for i, (categoria, lista_palabras) in enumerate(palabras_clasificadas.items()):
+for categoria, lista_palabras in palabras_clasificadas.items():
     for palabra in lista_palabras:
         # Determinar en qué columna colocar el botón
-        if i % 3 == 0:
+        if categoria == "Dulces":
             col = col1
-        elif i % 3 == 1:
+        elif categoria == "Ácido-Dulces":
             col = col2
         else:
             col = col3
@@ -84,4 +84,13 @@ if len(st.session_state["seleccionadas"]) == 10:
     sabor_secundario = next((sabor for categoria, sabores in sabores_mermelada.items() for palabra in secundarias if palabra in palabras_clasificadas[categoria] for sabor in sabores), "")
     
     # Determinar toppings
-    topping_final = next((
+    topping_final = next((top for categoria, top_list in toppings.items() for palabra in toppings_elegidos if palabra in palabras_clasificadas[categoria] for top in top_list), "")
+    
+    st.success(f"🍓 **Tu mermelada ideal es:** {sabor_principal} con {sabor_secundario}")
+    st.info(f"🥄 **Toppings recomendados:** {topping_final}")
+    
+    # Botón para reiniciar selección
+    if st.button("🔄 Reiniciar selección"):
+        st.session_state["seleccionadas"] = []
+else:
+    st.warning("Selecciona exactamente 10 palabras para generar tu mermelada.")
