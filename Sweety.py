@@ -1,8 +1,9 @@
 import streamlit as st
 import pandas as pd
+import openpyxl
 
 # Configurar la página
-st.set_page_config(page_title="Encuesta de Música y Mermelada", layout="wide")
+st.set_page_config(page_title="Encuesta: Descubre el Sabor de tu Canción", layout="wide")
 
 # Diccionario de palabras y su clasificación
 palabras_clasificadas = {
@@ -16,13 +17,6 @@ sabores_mermelada = {
     "Dulces": ["Mango", "Guanábana", "Brevas", "Remolacha", "Papayuela", "Pera Boyacense", "Durazno Criollo", "Guayaba", "Feijoa"],
     "Ácido-Dulces": ["Tomate de árbol", "Arándanos", "Fresas de Subachoque", "Ruibarbo y fresas", "Piña", "Mora", "Chontaduro", "Ciruela Criolla"],
     "Ácidas": ["Frutos Cítricos", "Lulo", "Uchuvas", "Tamarindo", "Naranja"]
-}
-
-# Toppings recomendados
-toppings = {
-    "Dulces": ["Chocolate blanco", "Miel", "Frutas caramelizadas"],
-    "Ácido-Dulces": ["Almendras", "Nueces"],
-    "Ácidas": ["Chocolate amargo", "Canela", "Queso azul"]
 }
 
 # Inicializar variables de sesión
@@ -86,8 +80,7 @@ if 5 <= len(st.session_state["seleccionadas"]) <= 10:
     if col2.button("🔒 Guardar respuesta en secreto"):
         st.session_state["guardar_respuesta"] = True
     
-    if st.session_state["mostrar_resultado"]:
-        st.subheader("🎯 Resultado")
+    if st.session_state["mostrar_resultado"] or st.session_state["guardar_respuesta"]:
         palabras = st.session_state["seleccionadas"]
         
         # Clasificar palabras según categorías
@@ -104,8 +97,6 @@ if 5 <= len(st.session_state["seleccionadas"]) <= 10:
         else:
             sabor_principal, sabor_secundario = "No determinado", "No determinado"
         
-        st.success(f"🍓 **Tu mermelada ideal es:** {sabor_principal} con {sabor_secundario}")
-        
         # Guardar los datos
         st.session_state["datos_guardados"] = pd.DataFrame({
             "Nombre": [nombre],
@@ -115,12 +106,17 @@ if 5 <= len(st.session_state["seleccionadas"]) <= 10:
             "Sabor Principal": [sabor_principal],
             "Sabor Secundario": [sabor_secundario]
         })
+        
+        if st.session_state["mostrar_resultado"]:
+            st.subheader("🎯 Resultado")
+            st.success(f"🍓 **Tu mermelada ideal es:** {sabor_principal} con {sabor_secundario}")
 
 # Botón discreto para descargar respuestas
 st.write("\n\n\n")  # Espacio en blanco para hacerlo menos perceptible
 if st.session_state["datos_guardados"] is not None:
     if st.button("⬇️", help="Descargar respuestas en Excel", key="descarga_oculta"):
         excel_file = "respuestas_encuesta.xlsx"
-        st.session_state["datos_guardados"].to_excel(excel_file, index=False)
+        st.session_state["datos_guardados"].to_excel(excel_file, index=False, engine='openpyxl')
         with open(excel_file, "rb") as file:
             st.download_button(label="Descargar Archivo", data=file, file_name=excel_file, mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
+        
