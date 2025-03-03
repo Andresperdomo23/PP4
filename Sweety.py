@@ -32,6 +32,8 @@ if "mostrar_resultado" not in st.session_state:
     st.session_state["mostrar_resultado"] = False
 if "guardar_respuesta" not in st.session_state:
     st.session_state["guardar_respuesta"] = False
+if "historial_respuesta" not in st.session_state:
+    st.session_state["historial_respuesta"] = None
 
 # Datos del usuario
 st.title("🎵 Encuesta: Descubre el Sabor de tu Canción 🎶")
@@ -81,6 +83,7 @@ if 5 <= len(st.session_state["seleccionadas"]) <= 10:
     
     if col1.button("🎵 Descubre tu Mermelada Musical 🎶"):
         st.session_state["mostrar_resultado"] = True
+        st.session_state["historial_respuesta"] = st.session_state["seleccionadas"].copy()
     
     if col2.button("🔒 Guardar respuesta en secreto"):
         st.session_state["guardar_respuesta"] = True
@@ -105,7 +108,9 @@ if 5 <= len(st.session_state["seleccionadas"]) <= 10:
         
         st.success(f"🍓 **Tu mermelada ideal es:** {sabor_principal} con {sabor_secundario}")
         
+        st.subheader("❌ ¿No te gustó?")
         if st.button("🔄 Reiniciar selección de palabras"):
             st.session_state["seleccionadas"] = []
             st.session_state["mostrar_resultado"] = False
             st.session_state["guardar_respuesta"] = False
+            st.session_state["historial_respuesta"] = None
