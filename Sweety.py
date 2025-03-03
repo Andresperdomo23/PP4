@@ -21,7 +21,7 @@ sabores_mermelada = {
 # Toppings recomendados
 toppings = {
     "Dulces": ["Chocolate blanco", "Miel", "Frutas caramelizadas"],
-    "Ácido-Dulces": ["Almendras", "Nueces", "Yogur griego"],
+    "Ácido-Dulces": ["Almendras", "Nueces"],
     "Ácidas": ["Chocolate amargo", "Canela", "Queso azul"]
 }
 
@@ -30,6 +30,8 @@ if "seleccionadas" not in st.session_state:
     st.session_state["seleccionadas"] = []
 if "mostrar_resultado" not in st.session_state:
     st.session_state["mostrar_resultado"] = False
+if "guardar_respuesta" not in st.session_state:
+    st.session_state["guardar_respuesta"] = False
 
 # Datos del usuario
 st.title("🎵 Encuesta: Descubre el Sabor de tu Canción 🎶")
@@ -70,9 +72,15 @@ st.write("---")
 
 # Evaluar selección
 if 5 <= len(st.session_state["seleccionadas"]) <= 10:
-    if st.button("🎵 Descubre tu Mermelada Musical 🎶"):
+    st.subheader("❓ ¿Quieres que tu sabor musical sea secreto hasta que llegue a ti?")
+    col1, col2 = st.columns(2)
+    
+    if col1.button("🎵 Descubre tu Mermelada Musical 🎶"):
         st.session_state["mostrar_resultado"] = True
-
+    
+    if col2.button("🔒 Guardar respuesta en secreto"):
+        st.session_state["guardar_respuesta"] = True
+    
     if st.session_state["mostrar_resultado"]:
         st.subheader("🎯 Resultado")
         palabras = st.session_state["seleccionadas"]
@@ -80,7 +88,6 @@ if 5 <= len(st.session_state["seleccionadas"]) <= 10:
         # Clasificar palabras según categorías
         predominantes = palabras[:3]
         secundarias = palabras[3:7]
-        toppings_elegidos = palabras[7:]
         
         # Determinar sabores
         sabores_seleccionados = list({sabor for categoria, sabores in sabores_mermelada.items() for palabra in predominantes + secundarias if palabra in palabras_clasificadas[categoria] for sabor in sabores})
@@ -92,28 +99,22 @@ if 5 <= len(st.session_state["seleccionadas"]) <= 10:
         else:
             sabor_principal, sabor_secundario = "No determinado", "No determinado"
         
-        # Determinar toppings
-        toppings_finales = list({top for categoria, top_list in toppings.items() for palabra in toppings_elegidos if palabra in palabras_clasificadas[categoria] for top in top_list})
-        
         st.success(f"🍓 **Tu mermelada ideal es:** {sabor_principal} con {sabor_secundario}")
-        st.info(f"🥄 **Toppings recomendados:** {', '.join(toppings_finales) if toppings_finales else 'Sin recomendación'}")
+    
+    if st.session_state["guardar_respuesta"]:
+        data = {
+            "Nombre": [nombre],
+            "Correo": [correo],
+            "Spotify Link": [spotify_link],
+            "Palabras Seleccionadas": [", ".join(st.session_state["seleccionadas"])],
+            "Sabor Principal": [sabor_principal],
+            "Sabor Secundario": [sabor_secundario]
+        }
         
-        # Botón para finalizar la encuesta y descargar datos
-        if st.button("📥 Finalizar Encuesta y Descargar Datos"):
-            data = {
-                "Nombre": [nombre],
-                "Correo": [correo],
-                "Spotify Link": [spotify_link],
-                "Palabras Seleccionadas": [", ".join(st.session_state["seleccionadas"])],
-                "Sabor Principal": [sabor_principal],
-                "Sabor Secundario": [sabor_secundario],
-                "Topping Recomendado": [', '.join(toppings_finales)]
-            }
-            
-            df = pd.DataFrame(data)
-            
-            excel_file = "encuesta_musica_mermelada.xlsx"
-            df.to_excel(excel_file, index=False)
-            
-            with open(excel_file, "rb") as file:
-                st.download_button(label="Descargar Archivo", data=file, file_name=excel_file, mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
+        df = pd.DataFrame(data)
+        
+        excel_file = "encuesta_musica_mermelada.xlsx"
+        df.to_excel(excel_file, index=False)
+        
+        with open(excel_file, "rb") as file:
+            st.download_button(label="Descargar Archivo", data=file, file_name=excel_file, mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
