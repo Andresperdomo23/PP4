@@ -28,6 +28,8 @@ if "guardar_respuesta" not in st.session_state:
     st.session_state["guardar_respuesta"] = False
 if "datos_guardados" not in st.session_state:
     st.session_state["datos_guardados"] = None
+if "clave_ingresada" not in st.session_state:
+    st.session_state["clave_ingresada"] = False
 
 # Datos del usuario
 st.title("🎵 Encuesta: Descubre el Sabor de tu Canción 🎶")
@@ -37,36 +39,11 @@ nombre = st.text_input("Nombre Completo", value=st.session_state.get("nombre", "
 correo = st.text_input("Correo Electrónico", value=st.session_state.get("correo", ""))
 spotify_link = st.text_input("Enlace de la canción en Spotify", value=st.session_state.get("spotify_link", ""))
 
+yogur_griego = st.radio("¿Te gustaría que tu experiencia de sabor musical incluya yogur griego?", ["Sí", "No"], index=1)
+
 st.session_state["nombre"] = nombre
 st.session_state["correo"] = correo
 st.session_state["spotify_link"] = spotify_link
-
-st.write("---")
-
-# Simulación de Drag & Drop con selección de palabras
-st.subheader("🔹 Selecciona entre 5 y 10 palabras que describan la canción")
-
-# Crear tres columnas
-col1, col2, col3 = st.columns(3)
-
-# Mostrar palabras como botones interactivos en las columnas
-for categoria, lista_palabras in palabras_clasificadas.items():
-    for palabra in lista_palabras:
-        # Determinar en qué columna colocar el botón
-        if categoria == "Dulces":
-            col = col1
-        elif categoria == "Ácido-Dulces":
-            col = col2
-        else:
-            col = col3
-
-        display_text = f"✅ {palabra}" if palabra in st.session_state["seleccionadas"] else palabra
-
-        if col.button(display_text, key=palabra, help="Selecciona esta palabra"):
-            if palabra not in st.session_state["seleccionadas"] and len(st.session_state["seleccionadas"]) < 10:
-                st.session_state["seleccionadas"].append(palabra)
-            elif palabra in st.session_state["seleccionadas"]:
-                st.session_state["seleccionadas"].remove(palabra)
 
 st.write("---")
 
@@ -104,19 +81,25 @@ if 5 <= len(st.session_state["seleccionadas"]) <= 10:
             "Spotify Link": [spotify_link],
             "Palabras Seleccionadas": [", ".join(st.session_state["seleccionadas"])],
             "Sabor Principal": [sabor_principal],
-            "Sabor Secundario": [sabor_secundario]
+            "Sabor Secundario": [sabor_secundario],
+            "Incluye Yogur Griego": [yogur_griego]
         })
         
         if st.session_state["mostrar_resultado"]:
             st.subheader("🎯 Resultado")
             st.success(f"🍓 **Tu mermelada ideal es:** {sabor_principal} con {sabor_secundario}")
 
-# Botón discreto para descargar respuestas
+# Clave para descargar
 st.write("\n\n\n")  # Espacio en blanco para hacerlo menos perceptible
 if st.session_state["datos_guardados"] is not None:
-    if st.button("⬇️", help="Descargar respuestas en Excel", key="descarga_oculta"):
-        excel_file = "respuestas_encuesta.xlsx"
-        st.session_state["datos_guardados"].to_excel(excel_file, index=False, engine='openpyxl')
-        with open(excel_file, "rb") as file:
-            st.download_button(label="Descargar Archivo", data=file, file_name=excel_file, mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
-        
+    clave = st.text_input("Ingrese la clave para descargar", type="password")
+    if clave == "mermelada123":  # Clave secreta
+        st.session_state["clave_ingresada"] = True
+    
+    if st.session_state["clave_ingresada"]:
+        if st.button("⬇️ Descargar respuestas en Excel", key="descarga_oculta"):
+            excel_file = "respuestas_encuesta.xlsx"
+            st.session_state["datos_guardados"].to_excel(excel_file, index=False, engine='openpyxl')
+            with open(excel_file, "rb") as file:
+                st.download_button(label="Descargar Archivo", data=file, file_name=excel_file, mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
+
