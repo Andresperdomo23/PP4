@@ -28,8 +28,6 @@ if "guardar_respuesta" not in st.session_state:
     st.session_state["guardar_respuesta"] = False
 if "datos_guardados" not in st.session_state:
     st.session_state["datos_guardados"] = None
-if "clave_ingresada" not in st.session_state:
-    st.session_state["clave_ingresada"] = False
 
 # Datos del usuario
 st.title("🎵 Encuesta: Descubre el Sabor de tu Canción 🎶")
@@ -111,16 +109,10 @@ if 5 <= len(st.session_state["seleccionadas"]) <= 10:
             st.subheader("🎯 Resultado")
             st.success(f"🍓 **Tu mermelada ideal es:** {sabor_principal} con {sabor_secundario}")
 
-# Clave para descargar
-st.write("\n\n\n")
+# Botón para descargar directamente
 if st.session_state["datos_guardados"] is not None:
-    clave = st.text_input("Ingrese la clave para descargar", type="password")
-    if clave == "mermelada123":
-        st.session_state["clave_ingresada"] = True
-    
-    if st.session_state["clave_ingresada"]:
-        if st.button("⬇️ Descargar respuestas en Excel", key="descarga_oculta"):
-            excel_file = "respuestas_encuesta.xlsx"
-            st.session_state["datos_guardados"].to_excel(excel_file, index=False, engine='openpyxl')
-            with open(excel_file, "rb") as file:
-                st.download_button(label="Descargar Archivo", data=file, file_name=excel_file, mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
+    if st.button("⬇️ Descargar respuestas en Excel", key="descarga_oculta"):
+        excel_file = "respuestas_encuesta.xlsx"
+        st.session_state["datos_guardados"].to_excel(excel_file, index=False, engine='openpyxl')
+        with open(excel_file, "rb") as file:
+            st.download_button(label="Descargar Archivo", data=file, file_name=excel_file, mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
