@@ -32,8 +32,8 @@ if "mostrar_resultado" not in st.session_state:
     st.session_state["mostrar_resultado"] = False
 if "guardar_respuesta" not in st.session_state:
     st.session_state["guardar_respuesta"] = False
-if "historial_respuesta" not in st.session_state:
-    st.session_state["historial_respuesta"] = None
+if "reiniciar" not in st.session_state:
+    st.session_state["reiniciar"] = False
 
 # Datos del usuario
 st.title("🎵 Encuesta: Descubre el Sabor de tu Canción 🎶")
@@ -79,16 +79,16 @@ st.write("---")
 # Evaluar selección
 if 5 <= len(st.session_state["seleccionadas"]) <= 10:
     st.subheader("❓ ¿Quieres que tu sabor musical sea secreto hasta que llegue a ti?")
-    col1, col2 = st.columns(2)
     
     if not st.session_state["mostrar_resultado"] and not st.session_state["guardar_respuesta"]:
+        col1, col2 = st.columns(2)
         if col1.button("🎵 Descubre tu Mermelada Musical 🎶"):
             st.session_state["mostrar_resultado"] = True
-            st.session_state["historial_respuesta"] = st.session_state["seleccionadas"].copy()
+            st.session_state["guardar_respuesta"] = False
         
         if col2.button("🔒 Guardar respuesta en secreto"):
             st.session_state["guardar_respuesta"] = True
-            st.session_state["historial_respuesta"] = st.session_state["seleccionadas"].copy()
+            st.session_state["mostrar_resultado"] = False
     
     if st.session_state["mostrar_resultado"]:
         st.subheader("🎯 Resultado")
@@ -115,5 +115,8 @@ if 5 <= len(st.session_state["seleccionadas"]) <= 10:
             st.session_state["seleccionadas"] = []
             st.session_state["mostrar_resultado"] = False
             st.session_state["guardar_respuesta"] = False
-            st.session_state["historial_respuesta"] = None
+            st.session_state["reiniciar"] = True
+    
+    if st.session_state["guardar_respuesta"]:
+        st.write("🔒 Tu elección ha sido guardada en secreto. ¡Espera tu sorpresa!")
 
