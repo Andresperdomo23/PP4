@@ -39,8 +39,6 @@ nombre = st.text_input("Nombre Completo", value=st.session_state.get("nombre", "
 correo = st.text_input("Correo Electrónico", value=st.session_state.get("correo", ""))
 spotify_link = st.text_input("Enlace de la canción en Spotify", value=st.session_state.get("spotify_link", ""))
 
-yogur_griego = st.radio("¿Te gustaría que tu experiencia de sabor musical incluya yogur griego?", ["Sí", "No"], index=1)
-
 st.session_state["nombre"] = nombre
 st.session_state["correo"] = correo
 st.session_state["spotify_link"] = spotify_link
@@ -106,8 +104,7 @@ if 5 <= len(st.session_state["seleccionadas"]) <= 10:
             "Spotify Link": [spotify_link],
             "Palabras Seleccionadas": [", ".join(st.session_state["seleccionadas"])],
             "Sabor Principal": [sabor_principal],
-            "Sabor Secundario": [sabor_secundario],
-            "Incluye Yogur Griego": [yogur_griego]
+            "Sabor Secundario": [sabor_secundario]
         })
         
         if st.session_state["mostrar_resultado"]:
