@@ -37,9 +37,13 @@ if "guardar_respuesta" not in st.session_state:
 st.title("🎵 Encuesta: Descubre el Sabor de tu Canción 🎶")
 st.write("Completa los siguientes campos y luego selecciona palabras que describan la canción")
 
-nombre = st.text_input("Nombre Completo")
-correo = st.text_input("Correo Electrónico")
-spotify_link = st.text_input("Enlace de la canción en Spotify")
+nombre = st.text_input("Nombre Completo", value=st.session_state.get("nombre", ""))
+correo = st.text_input("Correo Electrónico", value=st.session_state.get("correo", ""))
+spotify_link = st.text_input("Enlace de la canción en Spotify", value=st.session_state.get("spotify_link", ""))
+
+st.session_state["nombre"] = nombre
+st.session_state["correo"] = correo
+st.session_state["spotify_link"] = spotify_link
 
 st.write("---")
 
@@ -100,21 +104,8 @@ if 5 <= len(st.session_state["seleccionadas"]) <= 10:
             sabor_principal, sabor_secundario = "No determinado", "No determinado"
         
         st.success(f"🍓 **Tu mermelada ideal es:** {sabor_principal} con {sabor_secundario}")
-    
-    if st.session_state["guardar_respuesta"]:
-        data = {
-            "Nombre": [nombre],
-            "Correo": [correo],
-            "Spotify Link": [spotify_link],
-            "Palabras Seleccionadas": [", ".join(st.session_state["seleccionadas"])],
-            "Sabor Principal": [sabor_principal],
-            "Sabor Secundario": [sabor_secundario]
-        }
         
-        df = pd.DataFrame(data)
-        
-        excel_file = "encuesta_musica_mermelada.xlsx"
-        df.to_excel(excel_file, index=False)
-        
-        with open(excel_file, "rb") as file:
-            st.download_button(label="Descargar Archivo", data=file, file_name=excel_file, mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
+        if st.button("🔄 Reiniciar selección de palabras"):
+            st.session_state["seleccionadas"] = []
+            st.session_state["mostrar_resultado"] = False
+            st.session_state["guardar_respuesta"] = False
