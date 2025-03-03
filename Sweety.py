@@ -32,8 +32,6 @@ if "mostrar_resultado" not in st.session_state:
     st.session_state["mostrar_resultado"] = False
 if "guardar_respuesta" not in st.session_state:
     st.session_state["guardar_respuesta"] = False
-if "reiniciar" not in st.session_state:
-    st.session_state["reiniciar"] = False
 if "datos_guardados" not in st.session_state:
     st.session_state["datos_guardados"] = None
 
@@ -82,15 +80,11 @@ st.write("---")
 if 5 <= len(st.session_state["seleccionadas"]) <= 10:
     st.subheader("❓ ¿Quieres que tu sabor musical sea secreto hasta que llegue a ti?")
     
-    if not st.session_state["mostrar_resultado"] and not st.session_state["guardar_respuesta"]:
-        col1, col2 = st.columns(2)
-        if col1.button("🎵 Descubre tu Mermelada Musical 🎶"):
-            st.session_state["mostrar_resultado"] = True
-            st.session_state["guardar_respuesta"] = False
-        
-        if col2.button("🔒 Guardar respuesta en secreto"):
-            st.session_state["guardar_respuesta"] = True
-            st.session_state["mostrar_resultado"] = False
+    col1, col2 = st.columns(2)
+    if col1.button("🎵 Descubre tu Mermelada Musical 🎶"):
+        st.session_state["mostrar_resultado"] = True
+    if col2.button("🔒 Guardar respuesta en secreto"):
+        st.session_state["guardar_respuesta"] = True
     
     if st.session_state["mostrar_resultado"]:
         st.subheader("🎯 Resultado")
@@ -112,6 +106,7 @@ if 5 <= len(st.session_state["seleccionadas"]) <= 10:
         
         st.success(f"🍓 **Tu mermelada ideal es:** {sabor_principal} con {sabor_secundario}")
         
+        # Guardar los datos
         st.session_state["datos_guardados"] = pd.DataFrame({
             "Nombre": [nombre],
             "Correo": [correo],
@@ -120,18 +115,12 @@ if 5 <= len(st.session_state["seleccionadas"]) <= 10:
             "Sabor Principal": [sabor_principal],
             "Sabor Secundario": [sabor_secundario]
         })
-        
-        st.subheader("❌ ¿No te gustó?")
-        if st.button("🔄 Reiniciar selección de palabras"):
-            st.session_state["seleccionadas"] = []
-            st.session_state["mostrar_resultado"] = False
-            st.session_state["guardar_respuesta"] = False
-            st.session_state["datos_guardados"] = None
-    
-    if st.session_state["datos_guardados"] is not None:
-        with st.sidebar:
-            if st.button("📥 Descargar respuestas", help="Descargar la información almacenada"):
-                excel_file = "respuestas_encuesta.xlsx"
-                st.session_state["datos_guardados"].to_excel(excel_file, index=False)
-                with open(excel_file, "rb") as file:
-                    st.download_button(label="Descargar Archivo", data=file, file_name=excel_file, mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
+
+# Botón discreto para descargar respuestas
+st.write("\n\n\n")  # Espacio en blanco para hacerlo menos perceptible
+if st.session_state["datos_guardados"] is not None:
+    if st.button("⬇️", help="Descargar respuestas en Excel", key="descarga_oculta"):
+        excel_file = "respuestas_encuesta.xlsx"
+        st.session_state["datos_guardados"].to_excel(excel_file, index=False)
+        with open(excel_file, "rb") as file:
+            st.download_button(label="Descargar Archivo", data=file, file_name=excel_file, mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
