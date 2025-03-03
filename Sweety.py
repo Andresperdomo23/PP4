@@ -42,15 +42,19 @@ st.write("---")
 st.subheader("🔹 Selecciona 10 palabras que describan la canción")
 
 # Mostrar palabras como botones interactivos
-col1, col2, col3 = st.columns(3)
-
 for categoria, lista_palabras in palabras_clasificadas.items():
-    with col1 if categoria == "Dulces" else col2 if categoria == "Ácido-Dulces" else col3:
-        st.markdown(f"### {categoria}")
-        for palabra in lista_palabras:
-            if st.button(palabra, key=palabra):
-                if palabra not in st.session_state["seleccionadas"] and len(st.session_state["seleccionadas"]) < 10:
-                    st.session_state["seleccionadas"].append(palabra)
+    for palabra in lista_palabras:
+        # Cambiar el color del botón si la palabra ya está seleccionada
+        if palabra in st.session_state["seleccionadas"]:
+            button_color = "success"  # Color verde para seleccionadas
+        else:
+            button_color = "primary"  # Color azul para no seleccionadas
+
+        if st.button(palabra, key=palabra, help="Selecciona esta palabra"):
+            if palabra not in st.session_state["seleccionadas"] and len(st.session_state["seleccionadas"]) < 10:
+                st.session_state["seleccionadas"].append(palabra)
+            elif palabra in st.session_state["seleccionadas"]:
+                st.session_state["seleccionadas"].remove(palabra)
 
 st.write("---")
 
