@@ -56,11 +56,7 @@ for categoria, lista_palabras in palabras_clasificadas.items():
         else:
             col = col3
 
-        # Cambiar el color del botón si la palabra ya está seleccionada
-        if palabra in st.session_state["seleccionadas"]:
-            display_text = f"✅ {palabra}"  # Emoji de check
-        else:
-            display_text = palabra
+        display_text = f"✅ {palabra}" if palabra in st.session_state["seleccionadas"] else palabra
 
         if col.button(display_text, key=palabra, help="Selecciona esta palabra"):
             if palabra not in st.session_state["seleccionadas"] and len(st.session_state["seleccionadas"]) < 10:
@@ -71,7 +67,7 @@ for categoria, lista_palabras in palabras_clasificadas.items():
 st.write("---")
 
 # Evaluar selección
-if len(st.session_state["seleccionadas"]) >= 5:
+if 5 <= len(st.session_state["seleccionadas"]) <= 10:
     st.subheader("🎯 Resultado")
     palabras = st.session_state["seleccionadas"]
     
@@ -81,18 +77,23 @@ if len(st.session_state["seleccionadas"]) >= 5:
     toppings_elegidos = palabras[7:]
     
     # Determinar sabores
-    sabor_principal = next((sabor for categoria, sabores in sabores_mermelada.items() for palabra in predominantes if palabra in palabras_clasificadas[categoria] for sabor in sabores), "")
-    sabor_secundario = next((sabor for categoria, sabores in sabores_mermelada.items() for palabra in secundarias if palabra in palabras_clasificadas[categoria] for sabor in sabores), "")
+    sabores_seleccionados = list({sabor for categoria, sabores in sabores_mermelada.items() for palabra in predominantes + secundarias if palabra in palabras_clasificadas[categoria] for sabor in sabores})
+    
+    if len(sabores_seleccionados) >= 2:
+        sabor_principal, sabor_secundario = sabores_seleccionados[:2]
+    elif len(sabores_seleccionados) == 1:
+        sabor_principal, sabor_secundario = sabores_seleccionados[0], "Sin combinación"
+    else:
+        sabor_principal, sabor_secundario = "No determinado", "No determinado"
     
     # Determinar toppings
-    topping_final = next((top for categoria, top_list in toppings.items() for palabra in toppings_elegidos if palabra in palabras_clasificadas[categoria] for top in top_list), "")
+    toppings_finales = list({top for categoria, top_list in toppings.items() for palabra in toppings_elegidos if palabra in palabras_clasificadas[categoria] for top in top_list})
     
     st.success(f"🍓 **Tu mermelada ideal es:** {sabor_principal} con {sabor_secundario}")
-    st.info(f"🥄 **Toppings recomendados:** {topping_final}")
+    st.info(f"🥄 **Toppings recomendados:** {', '.join(toppings_finales) if toppings_finales else 'Sin recomendación'}")
     
     # Botón para finalizar la encuesta y descargar datos
     if st.button("📥 Finalizar Encuesta y Descargar Datos"):
-        # Crear un DataFrame con los datos
         data = {
             "Nombre": [nombre],
             "Correo": [correo],
@@ -100,15 +101,14 @@ if len(st.session_state["seleccionadas"]) >= 5:
             "Palabras Seleccionadas": [", ".join(st.session_state["seleccionadas"])],
             "Sabor Principal": [sabor_principal],
             "Sabor Secundario": [sabor_secundario],
-            "Topping Recomendado": [topping_final]
+            "Topping Recomendado": [', '.join(toppings_finales)]
         }
         
         df = pd.DataFrame(data)
         
-        # Guardar el DataFrame en un archivo Excel
         excel_file = "encuesta_musica_mermelada.xlsx"
         df.to_excel(excel_file, index=False)
         
-        # Botón de descarga
         with open(excel_file, "rb") as file:
             st.download_button(label="Descargar Archivo", data=file, file_name=excel_file, mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
+
