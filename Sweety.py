@@ -1,6 +1,7 @@
 import streamlit as st
 import pandas as pd
 import openpyxl
+import random
 
 # Configurar la página
 st.set_page_config(page_title="Encuesta: Descubre el Sabor de tu Canción", layout="wide")
@@ -87,6 +88,7 @@ if 5 <= len(st.session_state["seleccionadas"]) <= 10:
         
         # Determinar sabores
         sabores_seleccionados = list({sabor for categoria, sabores in sabores_mermelada.items() for palabra in predominantes + secundarias if palabra in palabras_clasificadas[categoria] for sabor in sabores})
+        random.shuffle(sabores_seleccionados)  # Mezclar los sabores para mayor diversidad
         
         if len(sabores_seleccionados) >= 2:
             sabor_principal, sabor_secundario = sabores_seleccionados[:2]
@@ -116,3 +118,4 @@ if st.session_state["datos_guardados"] is not None:
         st.session_state["datos_guardados"].to_excel(excel_file, index=False, engine='openpyxl')
         with open(excel_file, "rb") as file:
             st.download_button(label="Descargar Archivo", data=file, file_name=excel_file, mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
+
