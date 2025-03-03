@@ -34,6 +34,8 @@ if "guardar_respuesta" not in st.session_state:
     st.session_state["guardar_respuesta"] = False
 if "reiniciar" not in st.session_state:
     st.session_state["reiniciar"] = False
+if "datos_guardados" not in st.session_state:
+    st.session_state["datos_guardados"] = None
 
 # Datos del usuario
 st.title("🎵 Encuesta: Descubre el Sabor de tu Canción 🎶")
@@ -110,13 +112,26 @@ if 5 <= len(st.session_state["seleccionadas"]) <= 10:
         
         st.success(f"🍓 **Tu mermelada ideal es:** {sabor_principal} con {sabor_secundario}")
         
+        st.session_state["datos_guardados"] = pd.DataFrame({
+            "Nombre": [nombre],
+            "Correo": [correo],
+            "Spotify Link": [spotify_link],
+            "Palabras Seleccionadas": [", ".join(st.session_state["seleccionadas"])],
+            "Sabor Principal": [sabor_principal],
+            "Sabor Secundario": [sabor_secundario]
+        })
+        
         st.subheader("❌ ¿No te gustó?")
         if st.button("🔄 Reiniciar selección de palabras"):
             st.session_state["seleccionadas"] = []
             st.session_state["mostrar_resultado"] = False
             st.session_state["guardar_respuesta"] = False
-            st.session_state["reiniciar"] = True
+            st.session_state["datos_guardados"] = None
     
-    if st.session_state["guardar_respuesta"]:
-        st.write("🔒 Tu elección ha sido guardada en secreto. ¡Espera tu sorpresa!")
-
+    if st.session_state["datos_guardados"] is not None:
+        with st.sidebar:
+            if st.button("📥 Descargar respuestas", help="Descargar la información almacenada"):
+                excel_file = "respuestas_encuesta.xlsx"
+                st.session_state["datos_guardados"].to_excel(excel_file, index=False)
+                with open(excel_file, "rb") as file:
+                    st.download_button(label="Descargar Archivo", data=file, file_name=excel_file, mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
