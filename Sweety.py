@@ -81,12 +81,14 @@ if 5 <= len(st.session_state["seleccionadas"]) <= 10:
     st.subheader("❓ ¿Quieres que tu sabor musical sea secreto hasta que llegue a ti?")
     col1, col2 = st.columns(2)
     
-    if col1.button("🎵 Descubre tu Mermelada Musical 🎶"):
-        st.session_state["mostrar_resultado"] = True
-        st.session_state["historial_respuesta"] = st.session_state["seleccionadas"].copy()
-    
-    if col2.button("🔒 Guardar respuesta en secreto"):
-        st.session_state["guardar_respuesta"] = True
+    if not st.session_state["mostrar_resultado"] and not st.session_state["guardar_respuesta"]:
+        if col1.button("🎵 Descubre tu Mermelada Musical 🎶"):
+            st.session_state["mostrar_resultado"] = True
+            st.session_state["historial_respuesta"] = st.session_state["seleccionadas"].copy()
+        
+        if col2.button("🔒 Guardar respuesta en secreto"):
+            st.session_state["guardar_respuesta"] = True
+            st.session_state["historial_respuesta"] = st.session_state["seleccionadas"].copy()
     
     if st.session_state["mostrar_resultado"]:
         st.subheader("🎯 Resultado")
@@ -114,3 +116,4 @@ if 5 <= len(st.session_state["seleccionadas"]) <= 10:
             st.session_state["mostrar_resultado"] = False
             st.session_state["guardar_respuesta"] = False
             st.session_state["historial_respuesta"] = None
+
