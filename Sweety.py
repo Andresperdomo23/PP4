@@ -108,4 +108,4 @@ if len(st.session_state["seleccionadas"]) >= 5:
         df = pd.DataFrame(data)
         
         # Guardar el DataFrame en un archivo Excel
-        excel_file = "encuesta_m
+        excel_file = "encuesta_mus
