@@ -1,4 +1,5 @@
 import streamlit as st
+import pandas as pd
 
 # Configurar la página
 st.set_page_config(page_title="Encuesta de Música y Mermelada", layout="wide")
@@ -39,7 +40,7 @@ spotify_link = st.text_input("Enlace de la canción en Spotify")
 st.write("---")
 
 # Simulación de Drag & Drop con selección de palabras
-st.subheader("🔹 Selecciona 10 palabras que describan la canción")
+st.subheader("🔹 Selecciona entre 5 y 10 palabras que describan la canción")
 
 # Crear tres columnas
 col1, col2, col3 = st.columns(3)
@@ -58,10 +59,12 @@ for categoria, lista_palabras in palabras_clasificadas.items():
         # Cambiar el color del botón si la palabra ya está seleccionada
         if palabra in st.session_state["seleccionadas"]:
             button_color = "success"  # Color verde para seleccionadas
+            display_text = f"✅ {palabra}"  # Emoji de check
         else:
             button_color = "primary"  # Color azul para no seleccionadas
+            display_text = palabra
 
-        if col.button(palabra, key=palabra, help="Selecciona esta palabra"):
+        if col.button(display_text, key=palabra, help="Selecciona esta palabra"):
             if palabra not in st.session_state["seleccionadas"] and len(st.session_state["seleccionadas"]) < 10:
                 st.session_state["seleccionadas"].append(palabra)
             elif palabra in st.session_state["seleccionadas"]:
@@ -70,7 +73,7 @@ for categoria, lista_palabras in palabras_clasificadas.items():
 st.write("---")
 
 # Evaluar selección
-if len(st.session_state["seleccionadas"]) == 10:
+if len(st.session_state["seleccionadas"]) >= 5:
     st.subheader("🎯 Resultado")
     palabras = st.session_state["seleccionadas"]
     
@@ -89,8 +92,7 @@ if len(st.session_state["seleccionadas"]) == 10:
     st.success(f"🍓 **Tu mermelada ideal es:** {sabor_principal} con {sabor_secundario}")
     st.info(f"🥄 **Toppings recomendados:** {topping_final}")
     
-    # Botón para reiniciar selección
-    if st.button("🔄 Reiniciar selección"):
-        st.session_state["seleccionadas"] = []
-else:
-    st.warning("Selecciona exactamente 10 palabras para generar tu mermelada.")
+    # Botón para finalizar la encuesta y descargar datos
+    if st.button("📥 Finalizar Encuesta y Descargar Datos"):
+        # Crear un DataFrame con los datos
+        data =
