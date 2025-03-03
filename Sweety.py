@@ -58,10 +58,8 @@ for categoria, lista_palabras in palabras_clasificadas.items():
 
         # Cambiar el color del botón si la palabra ya está seleccionada
         if palabra in st.session_state["seleccionadas"]:
-            button_color = "success"  # Color verde para seleccionadas
             display_text = f"✅ {palabra}"  # Emoji de check
         else:
-            button_color = "primary"  # Color azul para no seleccionadas
             display_text = palabra
 
         if col.button(display_text, key=palabra, help="Selecciona esta palabra"):
@@ -108,4 +106,9 @@ if len(st.session_state["seleccionadas"]) >= 5:
         df = pd.DataFrame(data)
         
         # Guardar el DataFrame en un archivo Excel
-        excel_file = "encuesta_mus
+        excel_file = "encuesta_musica_mermelada.xlsx"
+        df.to_excel(excel_file, index=False)
+        
+        # Botón de descarga
+        with open(excel_file, "rb") as file:
+            st.download_button(label="Descargar Archivo", data=file, file_name=excel_file, mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
