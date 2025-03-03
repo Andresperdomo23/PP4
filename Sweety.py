@@ -95,4 +95,17 @@ if len(st.session_state["seleccionadas"]) >= 5:
     # Botón para finalizar la encuesta y descargar datos
     if st.button("📥 Finalizar Encuesta y Descargar Datos"):
         # Crear un DataFrame con los datos
-        data =
+        data = {
+            "Nombre": [nombre],
+            "Correo": [correo],
+            "Spotify Link": [spotify_link],
+            "Palabras Seleccionadas": [", ".join(st.session_state["seleccionadas"])],
+            "Sabor Principal": [sabor_principal],
+            "Sabor Secundario": [sabor_secundario],
+            "Topping Recomendado": [topping_final]
+        }
+        
+        df = pd.DataFrame(data)
+        
+        # Guardar el DataFrame en un archivo Excel
+        excel_file = "encuesta_m
